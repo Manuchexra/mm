@@ -4,7 +4,7 @@ from django.conf import settings
 from rest_framework import permissions
 from drf_yasg.views import get_schema_view
 from drf_yasg import openapi
-
+from django.contrib.auth import views as auth_views
 
 schema_view = get_schema_view(
    openapi.Info(
@@ -29,7 +29,9 @@ urlpatterns = [
     path('api/enrollments/', include('apps.enrollments.urls')),
     path('api/reviews/', include('apps.reviews.urls')),
     path('api/wishlist/', include('apps.wishlist.urls')),
+    path('accounts/login/', auth_views.LoginView.as_view(), name='login'),
 ]
+
 
 # === Swagger & Redoc Docs ===
 if settings.DEBUG:
