@@ -91,7 +91,7 @@ Foydalanuvchi kursni baholaydi (1-5 yulduz) va izoh qoldiradi. Kurs bahosi foyda
 
 ---
 
-## 🚀 Kelajakda qo‘shiladigan modullar (Rejalashtirilgan)
+## 🚀 Qo‘shiladigan modullar (Rejalashtirilgan)
 
 - ✅ **Wishlist** — Sevimli kurslarni saqlab qo‘yish
 - ✅ **Payments** — Kurs uchun to‘lov qilish (Payme, Stripe, Click)
