@@ -1,93 +1,115 @@
-📘 API HUJJATI — Online Course Platform
-Bu loyiha — foydalanuvchilarga onlayn kurslarni ko‘rish, yozilish, darslarni yakunlash, reyting berish va kurslar bilan interaktiv ishlash imkonini beruvchi backend tizimdir. Ushbu hujjatda mavjud barcha REST API endpointlar va ularning vazifalari keltirilgan.
+# 📘 API Documentation — Online Course Platform
 
-🔐 AUTHENTICATION & USER MANAGEMENT
-📌 Vazifasi:
-Foydalanuvchi ro‘yxatdan o‘tadi
+Bu loyiha foydalanuvchilarga onlayn kurslar bilan ishlash imkonini beruvchi zamonaviy e-learning backend platformasidir. Ushbu hujjatda barcha mavjud REST API endpointlar, ularning vazifasi va ishlatilishi bayon etilgan.
 
-Login qiladi va JWT token oladi
+---
 
-Profil ma’lumotlarini yangilaydi
+## 🔐 Authentication & User Management
 
-Method	Endpoint	Description
-POST	/api/auth/register/	Ro‘yxatdan o‘tish
-POST	/api/auth/login/	JWT token olish
-GET	/api/auth/profile/	Profilni ko‘rish (token kerak)
-PUT	/api/auth/profile/	Profilni tahrirlash (token kerak)
-🎓 COURSES — Kurslar boshqaruvi
-📌 Vazifasi:
-Kurslar yaratish, ko‘rish, yangilash
+Foydalanuvchilar tizimga ro‘yxatdan o‘tadi, login qiladi va JWT token orqali himoyalangan API’larga murojaat qiladi.
 
-Kurs ichidagi bo‘lim va darslarni strukturalash
+| Method | Endpoint             | Description                         |
+|--------|----------------------|-------------------------------------|
+| POST   | `/api/auth/register/` | Foydalanuvchi ro‘yxatdan o‘tadi     |
+| POST   | `/api/auth/login/`    | JWT token olish (login)             |
+| GET    | `/api/auth/profile/`  | Profil ma’lumotlarini ko‘rish       |
+| PUT    | `/api/auth/profile/`  | Profilni yangilash                  |
 
-Frontend'da asosiy kontent manbasi sifatida ishlatiladi
+---
 
-Method	Endpoint	Description
-GET	/api/courses/	Kurslar ro‘yxati
-GET	/api/courses/<id>/	Kurs tafsiloti
-POST	/api/courses/	Yangi kurs yaratish (instructor)
-PUT	/api/courses/<id>/	Kursni tahrirlash
-DELETE	/api/courses/<id>/	Kursni o‘chirish
-🗂️ CATEGORIES — Kurs Toifalari
-📌 Vazifasi:
-Kurslarni toifalarga ajratish (Frontend, Backend, Mobile, Design...)
+## 🎓 Courses API
 
-Filterlash va izlash uchun ishlatiladi
+Kurslar — tizimdagi asosiy o‘quv modullari bo‘lib, har biri bo‘limlar va darslardan iborat. Administratorlar yoki instructor’lar tomonidan boshqariladi.
 
-Method	Endpoint	Description
-GET	/api/categories/	Toifalar ro‘yxati
-🧩 SECTIONS & LESSONS — Kurs tuzilmasi
-📌 Vazifasi:
-Kurslarni mavzular (bo‘lim) va darslar (lesson) bo‘yicha strukturalash
+| Method | Endpoint              | Description                                |
+|--------|-----------------------|--------------------------------------------|
+| GET    | `/api/courses/`       | Kurslar ro‘yxati                           |
+| GET    | `/api/courses/<id>/`  | Kurs tafsiloti                             |
+| POST   | `/api/courses/`       | Yangi kurs yaratish                        |
+| PUT    | `/api/courses/<id>/`  | Kursni tahrirlash                          |
+| DELETE | `/api/courses/<id>/`  | Kursni o‘chirish                           |
 
-Har bir darsda video yoki kontent bo‘lishi mumkin
+---
 
-Method	Endpoint	Description
-GET	/api/sections/	Bo‘limlar ro‘yxati
-GET	/api/lessons/	Darslar ro‘yxati
-POST	/api/sections/	Kursga bo‘lim qo‘shish
-POST	/api/lessons/	Bo‘limga dars qo‘shish
-🧑‍🎓 ENROLLMENTS — Kursga yozilish va progress
-📌 Vazifasi:
-Foydalanuvchi kursga yoziladi (purchase bo‘lishi mumkin)
+## 🗂️ Course Categories
 
-Har bir dars uchun yakun holati kuzatiladi (progress tracking)
+Kurslar toifalarga ajratiladi (masalan: Frontend, Backend, Mobile...). Toifalar filter va UI dizaynlar uchun foydali.
 
-Foydalanuvchi progressiga qarab sertifikat chiqarish mumkin
+| Method | Endpoint            | Description                  |
+|--------|---------------------|------------------------------|
+| GET    | `/api/categories/`  | Kurs toifalari ro‘yxati      |
 
-Method	Endpoint	Description
-GET	/api/enrollments/	Mening yozilgan kurslarim
-POST	/api/enrollments/	Kursga yozilish
-GET	/api/enrollments/my/	Foydalanuvchining kurslari
-GET	/api/enrollments/progress/<id>/	Kursdagi darslar progressi
-POST	/api/enrollments/complete/<id>/	Darsni yakunlash
-⭐ REVIEWS — Izoh va baho
-📌 Vazifasi:
-Foydalanuvchi kursga reyting (yulduz) va izoh qoldiradi
+---
 
-Kurs o‘rtacha bahosini aniqlash uchun ishlatiladi
+## 🧩 Sections & Lessons
 
-Faqat kursga yozilgan foydalanuvchilar izoh qoldiradi
+Kurs ichida mavzular bo‘limlarga ajratiladi. Har bir bo‘limda bir nechta dars (lesson) bo‘ladi. Har bir lesson video, matn yoki har ikkisini o‘z ichiga oladi.
 
-Method	Endpoint	Description
-GET	/api/reviews/	Barcha izohlar
-GET	/api/reviews/?course=3	Muayyan kursga izohlar
-POST	/api/reviews/	Izoh + reyting berish (token kerak)
-PUT	/api/reviews/<id>/	Izohni yangilash
-DELETE	/api/reviews/<id>/	Izohni o‘chirish
-🔒 AUTHORIZATION
-JWT Authentication ishlatiladi
+| Method | Endpoint          | Description                         |
+|--------|-------------------|-------------------------------------|
+| GET    | `/api/sections/`  | Bo‘limlar ro‘yxati                  |
+| GET    | `/api/lessons/`   | Darslar ro‘yxati                    |
+| POST   | `/api/sections/`  | Bo‘lim yaratish                     |
+| POST   | `/api/lessons/`   | Dars yaratish                       |
 
-Authorization: Bearer <access_token> header orqali token yuboriladi
+---
 
-POST, PUT, DELETE uchun token majburiy
+## 🧑‍🎓 Enrollments API
 
-GET metodlarining ba'zilari IsAuthenticatedOrReadOnly bo‘lib, token ixtiyoriy
+Foydalanuvchi kursga yoziladi va progressi kuzatib boriladi. Har bir dars yakunlanganda foiz hisoblanadi.
 
-🧭 Kutilayotgan modullar (rejalashtirilgan)
-Modul	Tavsifi
-📝 Wishlist	Kurslarni saqlab qo‘yish (sevimlilar)
-💳 Payments	Kurslar uchun onlayn to‘lov qilish (Payme, Click, Stripe)
-📄 Certificates	Tugallangan kurslar uchun PDF sertifikat
-🔔 Notifications	Yangi darslar yoki kurs yangiliklari uchun xabarnoma
-🔍 Filters & Search	Kurslarni kategoriya, baho, kalit so‘z bo‘yicha filterlash
+| Method | Endpoint                           | Description                                  |
+|--------|------------------------------------|----------------------------------------------|
+| GET    | `/api/enrollments/`                | Kursga yozilganlar (auth user)               |
+| POST   | `/api/enrollments/`                | Kursga yozilish                              |
+| GET    | `/api/enrollments/my/`             | Mening kurslarim                             |
+| GET    | `/api/enrollments/progress/<id>/`  | Dars progressi (kurs bo‘yicha)               |
+| POST   | `/api/enrollments/complete/<id>/`  | Darsni tamomlash                             |
+
+---
+
+## ⭐ Course Reviews API
+
+Foydalanuvchi kursni baholaydi (1-5 yulduz) va izoh qoldiradi. Kurs bahosi foydalanuvchi fikriga qarab aniqlanadi.
+
+| Method | Endpoint                | Description                                 |
+|--------|-------------------------|---------------------------------------------|
+| GET    | `/api/reviews/`         | Barcha izohlar                              |
+| GET    | `/api/reviews/?course=3`| Kursga tegishli izohlar                     |
+| POST   | `/api/reviews/`         | Yangi izoh va baho qo‘shish                 |
+| PUT    | `/api/reviews/<id>/`    | Izohni yangilash                            |
+| DELETE | `/api/reviews/<id>/`    | Izohni o‘chirish                            |
+
+---
+
+## 🔐 Authentication & Permissions
+
+- `JWT` token orqali barcha maxfiy API’lar himoyalangan.
+- Token `Authorization: Bearer <access_token>` header orqali yuboriladi.
+- `POST`, `PUT`, `DELETE` metodlari uchun token majburiy.
+- Ba’zi `GET` API’lar `AllowAny` yoki `IsAuthenticatedOrReadOnly`.
+
+---
+
+## 🚀 Kelajakda qo‘shiladigan modullar (Rejalashtirilgan)
+
+- ✅ **Wishlist** — Sevimli kurslarni saqlab qo‘yish
+- ✅ **Payments** — Kurs uchun to‘lov qilish (Payme, Stripe, Click)
+- ✅ **Certificates** — Kurs tugagach avtomatik sertifikat olish
+- ✅ **Search/Filter** — Kurslarni izlash va filterlash
+- ✅ **Notifications** — Yangi darslar yoki kurs eslatmalari
+
+---
+
+## 📎 Eslatma
+
+- Barcha API'lar `RESTful` tarzda yaratilgan va `ViewSet` / `APIView` arxitekturasi asosida qurilgan.
+- Serializers orqali validation va avto-assign ishlari amalga oshirilgan (masalan: `request.user`).
+
+---
+
+```bash
+# Misol: Auth login qilish
+curl -X POST http://localhost:8000/api/auth/login/ \
+     -H "Content-Type: application/json" \
+     -d '{"username": "admin", "password": "admin123"}'
