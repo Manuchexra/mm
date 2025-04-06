@@ -1,7 +1,9 @@
-from rest_framework import generics, permissions, status
+from rest_framework import generics, permissions, status, viewsets
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from django.utils.timezone import now
+from rest_framework.permissions import IsAuthenticated
+from rest_framework.decorators import action
 from .models import Enrollment, LessonProgress
 from apps.courses.models import Course, Lesson
 from .serializers import (
@@ -9,6 +11,26 @@ from .serializers import (
     LessonProgressSerializer,
     CompleteLessonSerializer
 )
+
+
+
+class EnrollmentViewSet(viewsets.ModelViewSet):
+    serializer_class = EnrollmentSerializer
+    permission_classes = [IsAuthenticated]
+
+    def get_queryset(self):
+        return Enrollment.objects.filter(user=self.request.user)
+
+    def perform_create(self, serializer):
+        course = serializer.validated_data.get('course')
+        enrollment, created = Enrollment.objects.get_or_create(user=self.request.user, course=course)
+
+        if created:
+            lessons = Lesson.objects.filter(section__course=course)
+            LessonProgress.objects.bulk_create([
+                LessonProgress(enrollment=enrollment, lesson=lesson) for lesson in lessons
+            ])
+        return enrollment
 
 
 class EnrollView(APIView):

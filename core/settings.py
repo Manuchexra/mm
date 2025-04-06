@@ -41,6 +41,7 @@ INSTALLED_APPS = [
     'rest_framework',
     'apps.courses',
     'apps.users',
+    'apps.reviews',
     'apps.enrollments',
 ]
 
