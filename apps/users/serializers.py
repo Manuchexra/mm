@@ -23,3 +23,7 @@ class UserSerializer(serializers.ModelSerializer):
 class CustomTokenSerializer(serializers.Serializer):
     access = serializers.CharField()
     refresh = serializers.CharField()
+
+class LogoutSerializer(serializers.Serializer):
+    refresh = serializers.CharField()
+
