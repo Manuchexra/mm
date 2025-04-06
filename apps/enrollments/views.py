@@ -19,7 +19,10 @@ class EnrollmentViewSet(viewsets.ModelViewSet):
     permission_classes = [IsAuthenticated]
 
     def get_queryset(self):
+        if getattr(self, 'swagger_fake_view', False):
+            return Enrollment.objects.none()  # Swagger uchun bo'sh queryset
         return Enrollment.objects.filter(user=self.request.user)
+
 
     def perform_create(self, serializer):
         course = serializer.validated_data.get('course')
