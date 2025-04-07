@@ -1,12 +1,16 @@
 from django.urls import path
-from .views import RegisterView, ProfileView, LogoutView
-from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView
-from .views import swagger_logout
+
+from apps.users import views
 
 urlpatterns = [
-    path('register/', RegisterView.as_view()),
-    path('login/', TokenObtainPairView.as_view(), name='token_obtain_pair'),
-    path('refresh/', TokenRefreshView.as_view(), name='token_refresh'),
-    path('profile/', ProfileView.as_view()),
-    path('logout/', swagger_logout, name='token_logout'),
+    path('register/', views.UserRegisterAPIView.as_view()),
+    path('confirm/', views.ConfirmEmailView.as_view()),
+    path('reset-password/', views.ResetPasswordView.as_view()),
+    path('reset-password-verify/', views.ConfirmCodeView.as_view()),
+    path('reset_password_finish/', views.ConfirmPasswordView.as_view()),
+    path('users-list/', views.UserListAPIView.as_view()),
+    path('users-update/', views.UserUpdateAPIView.as_view(), name='user-update'),
+
+    path('user-account/<int:pk>', views.UserAccountAPIView.as_view()),
+
 ]
