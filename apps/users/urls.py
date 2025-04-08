@@ -1,16 +1,24 @@
 from django.urls import path
-
-from apps.users import views
+from .views import (
+    UserRegisterAPIView,
+    ConfirmEmailView,
+    ResetPasswordView,
+    ConfirmResetCodeView,
+    ConfirmPasswordView,
+    LogoutView,
+    UserAccountAPIView,
+    UserUpdateAPIView,
+    LoginAPIView
+)
 
 urlpatterns = [
-    path('register/', views.UserRegisterAPIView.as_view()),
-    path('confirm/', views.ConfirmEmailView.as_view()),
-    path('reset-password/', views.ResetPasswordView.as_view()),
-    path('reset-password-verify/', views.ConfirmCodeView.as_view()),
-    path('reset_password_finish/', views.ConfirmPasswordView.as_view()),
-    path('users-list/', views.UserListAPIView.as_view()),
-    path('users-update/', views.UserUpdateAPIView.as_view(), name='user-update'),
-
-    path('user-account/<int:pk>', views.UserAccountAPIView.as_view()),
-
+    path('register/', UserRegisterAPIView.as_view(), name='register'),
+    path('confirm-email/', ConfirmEmailView.as_view(), name='confirm-email'),
+    path('reset-password/', ResetPasswordView.as_view(), name='reset-password'),
+    path('reset-password/confirm-code/', ConfirmResetCodeView.as_view(), name='reset-confirm-code'),
+    path('reset-password/confirm-password/', ConfirmPasswordView.as_view(), name='reset-confirm-password'),
+    path('logout/', LogoutView.as_view(), name='logout'),
+    path('account/<int:pk>/', UserAccountAPIView.as_view(), name='user-account'),
+    path('account/update/<int:pk>/', UserUpdateAPIView.as_view(), name='user-account-update'),
+    path('login/', LoginAPIView.as_view(), name='login'),
 ]

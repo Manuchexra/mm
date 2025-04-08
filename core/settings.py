@@ -137,9 +137,14 @@ REST_FRAMEWORK = {
     ),
 }
 
+from datetime import timedelta
+
 SIMPLE_JWT = {
-    'AUTH_TOKEN_CLASSES': ('rest_framework_simplejwt.tokens.AccessToken',),
+    'ACCESS_TOKEN_LIFETIME': timedelta(minutes=60),
+    'REFRESH_TOKEN_LIFETIME': timedelta(days=1),
+    'ROTATE_REFRESH_TOKENS': False,
     'BLACKLIST_AFTER_ROTATION': True,
+    'UPDATE_LAST_LOGIN': False,
 }
 SWAGGER_SETTINGS = {
     'SECURITY_DEFINITIONS': {
@@ -150,3 +155,9 @@ SWAGGER_SETTINGS = {
         }
     }
 }
+
+CORS_ALLOWED_ORIGINS = [
+    'http://localhost:3000',
+]
+
+AUTH_USER_MODEL = 'users.User'

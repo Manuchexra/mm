@@ -1,115 +1,157 @@
-# 📘 API Documentation — Online Course Platform
 
-Bu loyiha foydalanuvchilarga onlayn kurslar bilan ishlash imkonini beruvchi zamonaviy e-learning backend platformasidir. Ushbu hujjatda barcha mavjud REST API endpointlar, ularning vazifasi va ishlatilishi bayon etilgan.
+# 🔐 AUTH API-lari - Foydalanuvchi boshqaruvi (O‘zbek tilida)
 
----
+Ushbu loyiha Django REST Framework asosida qurilgan **AUTH (Authentication/Authorization)** moduli bilan foydalanuvchilarni boshqarishni ta’minlaydi. Quyidagi funksiyalarni o‘z ichiga oladi:
 
-## 🔐 Authentication & User Management
-
-Foydalanuvchilar tizimga ro‘yxatdan o‘tadi, login qiladi va JWT token orqali himoyalangan API’larga murojaat qiladi.
-
-| Method | Endpoint             | Description                         |
-|--------|----------------------|-------------------------------------|
-| POST   | `/api/auth/register/` | Foydalanuvchi ro‘yxatdan o‘tadi     |
-| POST   | `/api/auth/login/`    | JWT token olish (login)             |
-| GET    | `/api/auth/profile/`  | Profil ma’lumotlarini ko‘rish       |
-| PUT    | `/api/auth/profile/`  | Profilni yangilash                  |
+- ✅ Ro‘yxatdan o‘tish
+- ✅ Tasdiqlash kodi yuborish va tekshirish
+- ✅ Parol o‘rnatish yoki tiklash
+- ✅ Tizimga kirish (JWT tokenlar asosida)
+- ✅ Foydalanuvchi ma’lumotlarini ko‘rish va yangilash
+- ✅ Admin uchun foydalanuvchilar ro‘yxati
 
 ---
 
-## 🎓 Courses API
+## 🌐 Swagger orqali test qilish
 
-Kurslar — tizimdagi asosiy o‘quv modullari bo‘lib, har biri bo‘limlar va darslardan iborat. Administratorlar yoki instructor’lar tomonidan boshqariladi.
+URL: [https://manuchehra.pythonanywhere.com/swagger/](https://manuchehra.pythonanywhere.com/swagger/)
 
-| Method | Endpoint              | Description                                |
-|--------|-----------------------|--------------------------------------------|
-| GET    | `/api/courses/`       | Kurslar ro‘yxati                           |
-| GET    | `/api/courses/<id>/`  | Kurs tafsiloti                             |
-| POST   | `/api/courses/`       | Yangi kurs yaratish                        |
-| PUT    | `/api/courses/<id>/`  | Kursni tahrirlash                          |
-| DELETE | `/api/courses/<id>/`  | Kursni o‘chirish                           |
+Swagger sahifasi orqali barcha endpointlarni to‘g‘ridan-to‘g‘ri sinovdan o‘tkazishingiz mumkin.
 
 ---
 
-## 🗂️ Course Categories
+## 📚 API-lar ro‘yxati va vazifalari
 
-Kurslar toifalarga ajratiladi (masalan: Frontend, Backend, Mobile...). Toifalar filter va UI dizaynlar uchun foydali.
+### 1. `POST /auth/register/` – Ro‘yxatdan o‘tish
+Foydalanuvchi telefon raqam yoki email orqali ro‘yxatdan o‘tadi.
 
-| Method | Endpoint            | Description                  |
-|--------|---------------------|------------------------------|
-| GET    | `/api/categories/`  | Kurs toifalari ro‘yxati      |
-
----
-
-## 🧩 Sections & Lessons
-
-Kurs ichida mavzular bo‘limlarga ajratiladi. Har bir bo‘limda bir nechta dars (lesson) bo‘ladi. Har bir lesson video, matn yoki har ikkisini o‘z ichiga oladi.
-
-| Method | Endpoint          | Description                         |
-|--------|-------------------|-------------------------------------|
-| GET    | `/api/sections/`  | Bo‘limlar ro‘yxati                  |
-| GET    | `/api/lessons/`   | Darslar ro‘yxati                    |
-| POST   | `/api/sections/`  | Bo‘lim yaratish                     |
-| POST   | `/api/lessons/`   | Dars yaratish                       |
+#### 🧪 JSON so‘rov:
+```json
+{
+  "phone_or_email": "user@example.com",
+  "full_name": "Ism Familiya"
+}
+```
+📌 Tasdiqlash kodi yuboriladi.
 
 ---
 
-## 🧑‍🎓 Enrollments API
+### 2. `POST /auth/confirm/` – Tasdiqlash kodi yuborish
+Foydalanuvchi yuborilgan kod va parolni kiritadi.
 
-Foydalanuvchi kursga yoziladi va progressi kuzatib boriladi. Har bir dars yakunlanganda foiz hisoblanadi.
-
-| Method | Endpoint                           | Description                                  |
-|--------|------------------------------------|----------------------------------------------|
-| GET    | `/api/enrollments/`                | Kursga yozilganlar (auth user)               |
-| POST   | `/api/enrollments/`                | Kursga yozilish                              |
-| GET    | `/api/enrollments/my/`             | Mening kurslarim                             |
-| GET    | `/api/enrollments/progress/<id>/`  | Dars progressi (kurs bo‘yicha)               |
-| POST   | `/api/enrollments/complete/<id>/`  | Darsni tamomlash                             |
-
----
-
-## ⭐ Course Reviews API
-
-Foydalanuvchi kursni baholaydi (1-5 yulduz) va izoh qoldiradi. Kurs bahosi foydalanuvchi fikriga qarab aniqlanadi.
-
-| Method | Endpoint                | Description                                 |
-|--------|-------------------------|---------------------------------------------|
-| GET    | `/api/reviews/`         | Barcha izohlar                              |
-| GET    | `/api/reviews/?course=3`| Kursga tegishli izohlar                     |
-| POST   | `/api/reviews/`         | Yangi izoh va baho qo‘shish                 |
-| PUT    | `/api/reviews/<id>/`    | Izohni yangilash                            |
-| DELETE | `/api/reviews/<id>/`    | Izohni o‘chirish                            |
+#### 🧪 JSON so‘rov:
+```json
+{
+  "phone_or_email": "user@example.com",
+  "confirmation_code": "123456",
+  "password": "YangiParol123!"
+}
+```
+📌 Akkount faollashadi va login qilish mumkin bo‘ladi.
 
 ---
 
-## 🔐 Authentication & Permissions
+### 3. `POST /auth/login/` – Tizimga kirish
+Foydalanuvchi login qiladi va JWT tokenlar oladi.
 
-- `JWT` token orqali barcha maxfiy API’lar himoyalangan.
-- Token `Authorization: Bearer <access_token>` header orqali yuboriladi.
-- `POST`, `PUT`, `DELETE` metodlari uchun token majburiy.
-- Ba’zi `GET` API’lar `AllowAny` yoki `IsAuthenticatedOrReadOnly`.
+#### 🧪 JSON so‘rov:
+```json
+{
+  "phone_or_email": "user@example.com",
+  "password": "YangiParol123!"
+}
+```
 
----
-
-## 🚀 Qo‘shiladigan modullar (Rejalashtirilgan)
-
-- ✅ **Wishlist** — Sevimli kurslarni saqlab qo‘yish
-- ✅ **Payments** — Kurs uchun to‘lov qilish (Payme, Stripe, Click)
-- ✅ **Certificates** — Kurs tugagach avtomatik sertifikat olish
-- ✅ **Search/Filter** — Kurslarni izlash va filterlash
-- ✅ **Notifications** — Yangi darslar yoki kurs eslatmalari
-
----
-
-## 📎 Eslatma
-
-- Barcha API'lar `RESTful` tarzda yaratilgan va `ViewSet` / `APIView` arxitekturasi asosida qurilgan.
-- Serializers orqali validation va avto-assign ishlari amalga oshirilgan (masalan: `request.user`).
+#### 📥 Javob:
+```json
+{
+  "access": "ACCESS_TOKEN",
+  "refresh": "REFRESH_TOKEN"
+}
+```
 
 ---
 
-```bash
-# Misol: Auth login qilish
-curl -X POST http://localhost:8000/api/auth/login/ \
-     -H "Content-Type: application/json" \
-     -d '{"username": "admin", "password": "admin123"}'
+## 🔄 Parolni tiklash – 3 bosqich
+
+### 4.1 `POST /auth/reset-password/` – Kod yuborish
+```json
+{
+  "phone_or_email": "user@example.com"
+}
+```
+
+### 4.2 `POST /auth/reset-password-verify/` – Kodni tasdiqlash
+```json
+{
+  "phone_or_email": "user@example.com",
+  "confirmation_code": "123456"
+}
+```
+
+### 4.3 `POST /auth/reset_password_finish/` – Yangi parolni o‘rnatish
+```json
+{
+  "phone_or_email": "user@example.com",
+  "new_password": "YangiParol123!"
+}
+```
+
+📌 Bu uch bosqich "Parolni unutdingizmi?" funksiyasini to‘liq bajaradi.
+
+---
+
+### 5. `GET /auth/user-account/{id}` – Foydalanuvchi ma’lumotlarini olish
+- Ma’lumot olish uchun `id` kerak bo‘ladi.
+- Token talab qilinadi (Authorization: Bearer ...)
+
+---
+
+### 6. `PUT/PATCH /auth/users-update/` – Profilni yangilash
+
+#### 🧪 JSON so‘rov:
+```json
+{
+  "full_name": "Yangi Ism Familiya"
+}
+```
+- `PUT`: to‘liq yangilaydi.
+- `PATCH`: faqat kerakli maydon(lar)ni.
+
+---
+
+### 7. `GET /auth/users-list/` – Foydalanuvchilar ro‘yxati (admin uchun)
+Tizimdagi barcha foydalanuvchilar ro‘yxatini olish uchun ishlatiladi. Admin roli kerak.
+
+---
+
+## 🔐 Token ishlatish
+
+Login so‘rovdan keyin sizga quyidagi tokenlar keladi:
+
+```json
+{
+  "access": "ACCESS_TOKEN",
+  "refresh": "REFRESH_TOKEN"
+}
+```
+
+Token bilan himoyalangan endpointga so‘rov yuborish uchun headerga quyidagicha yoziladi:
+
+```
+Authorization: Bearer ACCESS_TOKEN
+```
+
+---
+
+## 🧪 Test qilish bo‘yicha tavsiyalar
+
+- [Swagger](https://manuchehra.pythonanywhere.com/swagger/) orqali har bir endpointni sinovdan o‘tkazing.
+- `Postman` orqali tokenlar bilan foydalanishni mashq qiling.
+- `curl` orqali terminalda ishlatib ko‘ring.
+
+---
+
+## 📎 Qo‘shimcha izoh
+
+Ushbu AUTH moduli istalgan veb-ilova yoki mobil ilovaga qulay qo‘shilishi mumkin. Foydalanuvchilarni ro‘yxatdan o‘tkazish, identifikatsiya qilish va ularni boshqarish jarayonlarini tez va ishonchli avtomatlashtirish imkonini beradi.

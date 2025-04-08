@@ -17,13 +17,9 @@ class UserCustomManager(BaseUserManager):
     use_in_migrations = True
 
     def _create_user(self, email, password, **extra_fields):
-        """
-        Create and save a user with the given email, and password.
-        """
         if not email:
             raise ValueError("The given email must be set")
         email = self.normalize_email(email)
-
         user = self.model(email=email, **extra_fields)
         user.password = make_password(password)
         user.save(using=self._db)
@@ -62,12 +58,15 @@ class OpeningTime(BaseModel):
 
 
 class User(AbstractUser):
+    class Meta:
+        db_table = 'users_user'
+
     _validate_email = RegexValidator(
-        regex=r'^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$',
+        regex=r'^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}$',
         message='Enter a valid email address'
     )
     _validate_phone_number = RegexValidator(
-        regex=r"^9\d{12}$",
+        regex=r"^9\\d{12}$",
         message='Enter a valid phone number'
     )
 
@@ -79,7 +78,6 @@ class User(AbstractUser):
         ('pending', 'pending'),
         ('confirmed', 'confirmed'),
     )
-
     AUTH_ROLE = (
         ('moderator', 'moderator'),
         ('seller', 'seller'),
@@ -89,20 +87,26 @@ class User(AbstractUser):
 
     first_name = None
     last_name = None
+    username = models.CharField(max_length=150, unique=True)
+    email = models.EmailField(unique=True)
     full_name = models.CharField(max_length=255, blank=True, null=True)
     banner = models.ImageField(upload_to='banners/', null=True, blank=True)
     bio = models.TextField(null=True, blank=True)
     auth_type = models.CharField(max_length=20, choices=AUTH_TYPE)
     auth_role = models.CharField(max_length=20, choices=AUTH_ROLE, default='buyer')
     phone_number = models.CharField(max_length=13, null=True, blank=True)
-    image = models.ImageField(upload_to='project/', null=True)
-    email = models.EmailField(blank=True, validators=[_validate_email])
-    wallet = models.PositiveIntegerField(null=True, default=0)
+    image = models.ImageField(upload_to='project/', null=True, blank=True)
+    wallet = models.PositiveIntegerField(default=0, null=True)
     email_confirmed = models.BooleanField(default=False)
-    working_hours = models.ManyToManyField(OpeningTime, related_name='working_hours')
+    working_hours = models.ManyToManyField(OpeningTime, related_name='working_hours', blank=True)
     auth_status = models.CharField(max_length=20, choices=AUTH_STATUS, default='pending')
     country = models.CharField(max_length=100, blank=True, null=True)
     specialization = models.CharField(max_length=255, blank=True, null=True)
+
+    USERNAME_FIELD = 'email'
+    REQUIRED_FIELDS = []
+
+    objects = UserCustomManager()
 
     def save(self, *args, **kwargs):
         if self.email_confirmed:
