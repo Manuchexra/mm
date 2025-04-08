@@ -1,5 +1,5 @@
 
-# 🔐 AUTH API-lari - Foydalanuvchi boshqaruvi (O‘zbek tilida)
+# 🔐 AUTH API-lari - Foydalanuvchi boshqaruvi
 
 Ushbu loyiha Django REST Framework asosida qurilgan **AUTH (Authentication/Authorization)** moduli bilan foydalanuvchilarni boshqarishni ta’minlaydi. Quyidagi funksiyalarni o‘z ichiga oladi:
 
