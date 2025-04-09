@@ -144,3 +144,5 @@ class User(AbstractUser):
             "refresh": str(refresh),
             "access": str(refresh.access_token),
         }
+    def __str__(self):
+        return "mm"
