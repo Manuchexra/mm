@@ -84,8 +84,12 @@ WSGI_APPLICATION = "core.wsgi.application"
 # Database
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
+        'ENGINE': 'django.db.backends.postgresql',  # Correct engine for PostgreSQL
+        'NAME': 'online_course',              # Replace with your actual DB name
+        'USER': 'postgres',                        # PostgreSQL username
+        'PASSWORD': 'postgrespswd',                # PostgreSQL password
+        'HOST': 'localhost',                      # Database host
+        'PORT': '5432',                           # Default PostgreSQL port
     }
 }
 
@@ -164,12 +168,12 @@ EMAIL_USE_TLS = True
 EMAIL_HOST_USER = 'dearkamoliddin@gmail.com'
 EMAIL_HOST_PASSWORD = 'mfgy rvbi ocph ojbs'
 
-EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
-EMAIL_HOST = 'smtp.gmail.com'
-EMAIL_PORT = 587
-EMAIL_USE_TLS = True
-EMAIL_HOST_USER = 'your_email@gmail.com'
-EMAIL_HOST_PASSWORD = 'your_app_password'  # App password, not regular password
+# EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+# EMAIL_HOST = 'smtp.gmail.com'
+# EMAIL_PORT = 587
+# EMAIL_USE_TLS = True
+# EMAIL_HOST_USER = 'your_email@gmail.com'
+# EMAIL_HOST_PASSWORD = 'your_app_password'  # App password, not regular password
 
 # CORS settings
 CORS_ALLOW_ALL_ORIGINS = True
