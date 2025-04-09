@@ -13,9 +13,9 @@ from .utils import (
 def is_phone(phone):
     return bool(re.match(r"^\+998\d{9}$", phone))
 
-
 def is_email(email):
-    return bool(re.match(r"^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}$", email))
+    return bool(re.match(r"^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$", email))
+
 
 
 class UserRegisterSerializer(serializers.Serializer):

@@ -108,8 +108,9 @@ class User(AbstractUser):
     last_name = None
 
     username = models.CharField(max_length=150, unique=True)
-    email = models.EmailField(unique=True, null=True, blank=True, validators=[validate_email])
-    phone_number = models.CharField(max_length=13, null=True, blank=True, validators=[validate_phone])
+    phone_number = models.CharField(max_length=13, unique=True, null=True, blank=True)
+    email = models.EmailField(unique=True, null=True, blank=True)
+
     full_name = models.CharField(max_length=255, blank=True, null=True)
 
     auth_type = models.CharField(max_length=20, choices=AUTH_TYPE)
