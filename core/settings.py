@@ -164,12 +164,7 @@ EMAIL_USE_TLS = True
 EMAIL_HOST_USER = 'dearkamoliddin@gmail.com'
 EMAIL_HOST_PASSWORD = 'mfgy rvbi ocph ojbs'
 
-EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
-EMAIL_HOST = 'smtp.gmail.com'
-EMAIL_PORT = 587
-EMAIL_USE_TLS = True
-EMAIL_HOST_USER = 'your_email@gmail.com'
-EMAIL_HOST_PASSWORD = 'your_app_password'  # App password, not regular password
+
 
 # CORS settings
 CORS_ALLOW_ALL_ORIGINS = True
