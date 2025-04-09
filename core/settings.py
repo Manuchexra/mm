@@ -18,7 +18,6 @@ SECRET_KEY = env.str("SECRET_KEY", 'skjbxs')
 DEBUG = env.bool("DEBUG", True)
 
 ALLOWED_HOSTS = ["*"]
-ALLOWED_HOSTS = ["manuchehra.pythonanywhere.com"]
 
 # Application definition
 DJANGO_APPS = [

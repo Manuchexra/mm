@@ -12,7 +12,6 @@ class BaseModel(models.Model):
         abstract = True
 
 import uuid
-import uuid
 
 class UserCustomManager(BaseUserManager):
     use_in_migrations = True
