@@ -19,6 +19,8 @@ DEBUG = env.bool("DEBUG", True)
 
 ALLOWED_HOSTS = ["*"]
 
+LOGOUT_REDIRECT_URL = '/swagger/'
+
 # Application definition
 DJANGO_APPS = [
     "jazzmin",
@@ -28,6 +30,7 @@ DJANGO_APPS = [
     "django.contrib.sessions",
     "django.contrib.messages",
     "django.contrib.staticfiles",
+    
 ]
 
 CUSTOM_APPS = [

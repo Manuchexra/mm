@@ -23,6 +23,15 @@ from .serializers import (
 )
 from .utils import send_confirmation_code_to_user, generate_confirmation_code, send_verification_code_to_user
 
+from django.contrib.auth import logout
+from django.shortcuts import redirect
+from django.views import View
+
+class CustomLogoutView(View):
+    def get(self, request):
+        logout(request)
+        return redirect('/swagger/')
+
 
 class LoginAPIView(TokenObtainPairView):
     permission_classes = [AllowAny]
@@ -146,12 +155,16 @@ class LogoutView(APIView):
 
 
 class UserAccountAPIView(generics.RetrieveAPIView):
-    queryset = User.objects.all()
     serializer_class = UserAccountSerializer
     permission_classes = [IsAuthenticated]
+
+    def get_object(self):
+        return self.request.user  # Faqat login bo‘lgan userning o‘zi chiqadi
+
 
 
 class UserUpdateAPIView(generics.UpdateAPIView):
     queryset = User.objects.all()
     serializer_class = UserUpdateSerializer
     permission_classes = [IsAuthenticated]
+
