@@ -87,8 +87,8 @@ DATABASES = {
         'ENGINE': 'django.db.backends.postgresql',  # Correct engine for PostgreSQL
         'NAME': 'online_course',              # Replace with your actual DB name
         'USER': 'postgres',                        # PostgreSQL username
-        'PASSWORD': 'postgrespswd',                # PostgreSQL password
-        'HOST': 'localhost',                      # Database host
+        'PASSWORD': 'Themeister@13',                # PostgreSQL password
+        'HOST': '13.40.123.211',                      # Database host
         'PORT': '5432',                           # Default PostgreSQL port
     }
 }
