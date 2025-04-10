@@ -88,8 +88,8 @@ DATABASES = {
         'NAME': 'online_course',              # Replace with your actual DB name
         'USER': 'postgres',                        # PostgreSQL username
         'PASSWORD': 'Themeister@13',                # PostgreSQL password
-        'HOST': '13.40.123.211',                      # Database host
-        'PORT': '5432',                           # Default PostgreSQL port
+        'HOST': '13.40.123.211',                     
+        'PORT': '5432',                           
     }
 }
 

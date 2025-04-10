@@ -155,11 +155,10 @@ class LogoutView(APIView):
 
 
 class UserAccountAPIView(generics.RetrieveAPIView):
+    queryset = User.objects.all()
     serializer_class = UserAccountSerializer
     permission_classes = [IsAuthenticated]
 
-    def get_object(self):
-        return self.request.user  # Faqat login bo‘lgan userning o‘zi chiqadi
 
 
 
