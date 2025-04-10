@@ -154,11 +154,14 @@ class LogoutView(APIView):
             return Response({"error": str(e)}, status=400)
 
 
+
 class UserAccountAPIView(generics.RetrieveAPIView):
     queryset = User.objects.all()
     serializer_class = UserAccountSerializer
     permission_classes = [IsAuthenticated]
-
+    def get_queryset(self):
+        # Faqat login bo‘lgan userning o‘zi qaytariladi
+        return [self.request.user]
 
 
 
