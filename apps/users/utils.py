@@ -2,6 +2,8 @@ from django.core.mail import send_mail
 from django.conf import settings
 import random
 import string
+import requests
+from django.utils import timezone
 
 
 def generate_confirmation_code():

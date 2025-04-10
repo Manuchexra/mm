@@ -101,6 +101,9 @@ AUTH_PASSWORD_VALIDATORS = [
     {"NAME": "django.contrib.auth.password_validation.NumericPasswordValidator"},
 ]
 
+SMS_URL = ""  # bu sizning SMS xizmat provayderingiz URL manzili
+SMS_LOGIN = ""
+SMS_PASSWORD = ""
 # Internationalization
 LANGUAGE_CODE = "en-us"
 TIME_ZONE = "Asia/Tashkent"
