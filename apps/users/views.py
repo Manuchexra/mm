@@ -155,15 +155,33 @@ class LogoutView(APIView):
 
 
 
+# class UserAccountAPIView(generics.RetrieveAPIView):
+#     queryset = User.objects.all()
+#     serializer_class = UserAccountSerializer
+#     permission_classes = [IsAuthenticated]
+#     def get_queryset(self):
+#         # Faqat login bo‘lgan userning o‘zi qaytariladi
+#         return [self.request.user]
+
+# from rest_framework import generics
+# from rest_framework.permissions import IsAuthenticated
+# from .models import User
+# from .serializers import UserAccountSerializer
+
 class UserAccountAPIView(generics.RetrieveAPIView):
     serializer_class = UserAccountSerializer
     permission_classes = [IsAuthenticated]
+<<<<<<< HEAD
     
     def get_object(self):
         """Faqat joriy foydalanuvchi ma'lumotlarini qaytaradi"""
         return self.request.user
 
+=======
+>>>>>>> bddd2005b1be8b0025dafe32925763de992525cf
 
+    def get_object(self):
+        return self.request.user
 
 class UserUpdateAPIView(generics.UpdateAPIView):
     queryset = User.objects.all()

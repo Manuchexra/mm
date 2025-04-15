@@ -22,25 +22,24 @@ def send_confirmation_code_to_user(user, code):
 
 
 def send_verification_code_to_user(phone, code):
-    print(f"Verification code: {str(code)}")
-    message_id = str(timezone.now())  # noqa
-    requests.post(
-        settings.SMS_URL,
-        auth=(settings.SMS_LOGIN, settings.SMS_PASSWORD),
-        json={
-            "messages": [
-                {
-                    "recipient": str(phone),
-                    "message-id": message_id,
-                    "sms": {
-                        "originator": "3700",
-                        "content": {
-                            "text": f" <#> Sizning tasdiqlash kodingiz {code}"
-                        },
-                    },
-                }
-            ]
-        },
-    )
-
-
+    pass
+    # print(f"Verification code: {str(code)}")
+    # message_id = str(timezone.now())  # noqa
+    # requests.post(
+    #     settings.SMS_URL,
+    #     auth=(settings.SMS_LOGIN, settings.SMS_PASSWORD),
+    #     json={
+    #         "messages": [
+    #             {
+    #                 "recipient": str(phone),
+    #                 "message-id": message_id,
+    #                 "sms": {
+    #                     "originator": "3700",
+    #                     "content": {
+    #                         "text": f" <#> Sizning tasdiqlash kodingiz {code}"
+    #                     },
+    #                 },
+    #             }
+    #         ]
+    #     },
+    # )
