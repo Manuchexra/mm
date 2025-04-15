@@ -171,14 +171,11 @@ class LogoutView(APIView):
 class UserAccountAPIView(generics.RetrieveAPIView):
     serializer_class = UserAccountSerializer
     permission_classes = [IsAuthenticated]
-<<<<<<< HEAD
     
     def get_object(self):
         """Faqat joriy foydalanuvchi ma'lumotlarini qaytaradi"""
         return self.request.user
 
-=======
->>>>>>> bddd2005b1be8b0025dafe32925763de992525cf
 
     def get_object(self):
         return self.request.user
