@@ -163,13 +163,14 @@ class LogoutView(APIView):
 #         # Faqat login bo‘lgan userning o‘zi qaytariladi
 #         return [self.request.user]
 
-# from rest_framework import generics
-# from rest_framework.permissions import IsAuthenticated
-# from .models import User
-# from .serializers import UserAccountSerializer
 
-class UserAccountAPIView(generics.RetrieveAPIView):
-    serializer_class = UserAccountSerializer
+# class UserAccountAPIView(generics.RetrieveAPIView):
+#     serializer_class = UserAccountSerializer
+#     permission_classes = [IsAuthenticated]
+
+#     def get_object(self):
+#         return self.request.user
+class UserAccountAPIView(APIView):
     permission_classes = [IsAuthenticated]
     
     def get_object(self):
@@ -177,9 +178,16 @@ class UserAccountAPIView(generics.RetrieveAPIView):
         return self.request.user
 
 
-    def get_object(self):
-        return self.request.user
+    def get(self, request):
+        serializer = UserAccountSerializer(request.user)
+        return Response(serializer.data)
 
+    def post(self, request):
+        serializer = UserAccountSerializer(request.user, data=request.data, partial=True)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_200_OK)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 class UserUpdateAPIView(generics.UpdateAPIView):
     queryset = User.objects.all()
     serializer_class = UserUpdateSerializer
