@@ -85,7 +85,7 @@ class VerifyResetPasswordSerializer(serializers.Serializer):
 class UserAccountSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
-        exclude = ['password'] 
+        fields="__all__"
 
 
 class UserUpdateSerializer(serializers.ModelSerializer):
