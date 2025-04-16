@@ -120,10 +120,10 @@ class ConfirmPasswordView(APIView):
     @swagger_auto_schema(request_body=VerifyResetPasswordSerializer)
     def post(self, request):
         password1 = request.data.get("password_one")
-        password2 = request.data.get("password_two")
+        # password2 = request.data.get("password_two")
 
-        if password1 != password2:
-            return Response({"error": "Passwords do not match"}, status=400)
+        # if password1 != password2:
+        #     return Response({"error": "Passwords do not match"}, status=400)
 
         user = request.user
         user.set_password(password1)
@@ -176,19 +176,32 @@ class UserAccountAPIView(APIView):
     def get_object(self):
         """Faqat joriy foydalanuvchi ma'lumotlarini qaytaradi"""
         return self.request.user
-
-
+    @swagger_auto_schema(
+        operation_description="Joriy foydalanuvchi ma'lumotlarini olish",
+        responses={
+            200: UserAccountSerializer,
+            401: openapi.Response("Autentifikatsiya xatosi")
+        }
+    )
     def get(self, request):
         serializer = UserAccountSerializer(request.user)
         return Response(serializer.data)
 
+    @swagger_auto_schema(
+        operation_description="Joriy foydalanuvchi ma'lumotlarini yangilash",
+        request_body=UserAccountSerializer,
+        responses={
+            200: UserAccountSerializer,
+            400: openapi.Response("Xato xabari"),
+            401: openapi.Response("Autentifikatsiya xatosi")
+        }
+    )
     def post(self, request):
         serializer = UserAccountSerializer(request.user, data=request.data, partial=True)
         if serializer.is_valid():
             serializer.save()
             return Response(serializer.data, status=status.HTTP_200_OK)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-
 class UserUpdateAPIView(generics.UpdateAPIView):
     queryset = User.objects.all()
     serializer_class = UserUpdateSerializer
