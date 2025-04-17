@@ -31,13 +31,28 @@ class CustomLogoutView(View):
     def get(self, request):
         logout(request)
         return redirect('/swagger/')
-
-
+    
 class LoginAPIView(TokenObtainPairView):
     permission_classes = [AllowAny]
     serializer_class = TokenObtainPairSerializer
 
-
+    @swagger_auto_schema(
+        operation_description="Obtain access and refresh tokens for user login",
+        responses={
+            200: openapi.Response(
+                description="Successful login",
+                schema=openapi.Schema(
+                    type=openapi.TYPE_OBJECT,
+                    properties={
+                        'refresh': openapi.Schema(type=openapi.TYPE_STRING, description='Refresh token'),
+                        'access': openapi.Schema(type=openapi.TYPE_STRING, description='Access token'),
+                    },
+                ),
+            ),
+        }
+    )
+    def post(self, request, *args, **kwargs):
+        return super().post(request, *args, **kwargs)
 class UserRegisterAPIView(generics.CreateAPIView):
     queryset = User.objects.all()
     serializer_class = UserRegisterSerializer
@@ -153,23 +168,6 @@ class LogoutView(APIView):
         except Exception as e:
             return Response({"error": str(e)}, status=400)
 
-
-
-# class UserAccountAPIView(generics.RetrieveAPIView):
-#     queryset = User.objects.all()
-#     serializer_class = UserAccountSerializer
-#     permission_classes = [IsAuthenticated]
-#     def get_queryset(self):
-#         # Faqat login bo‘lgan userning o‘zi qaytariladi
-#         return [self.request.user]
-
-
-# class UserAccountAPIView(generics.RetrieveAPIView):
-#     serializer_class = UserAccountSerializer
-#     permission_classes = [IsAuthenticated]
-
-#     def get_object(self):
-#         return self.request.user
 class UserAccountAPIView(APIView):
     permission_classes = [IsAuthenticated]
     
