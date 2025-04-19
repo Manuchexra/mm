@@ -7,7 +7,9 @@ from django.utils import timezone
 
 
 def generate_confirmation_code():
-    return ''.join(random.choices(string.digits, k=4))
+    first_digit = random.choice(string.digits[1:])  # 1 dan 9 gacha
+    other_digits = ''.join(random.choices(string.digits, k=3))  # 3 ta raqam
+    return first_digit + other_digits
 
 
 def send_confirmation_code_to_user(user, code):

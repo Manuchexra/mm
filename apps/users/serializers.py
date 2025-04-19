@@ -79,7 +79,6 @@ class ResetPasswordSerializer(serializers.Serializer):
 
 class VerifyResetPasswordSerializer(serializers.Serializer):
     password_one = serializers.CharField()
-    password_two = serializers.CharField()
 
 
 class UserAccountSerializer(serializers.ModelSerializer):
