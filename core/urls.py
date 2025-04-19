@@ -26,7 +26,7 @@ urlpatterns = [
     path('api/wishlist/', include('apps.wishlist.urls')),
     # path('m/', include('django.contrib.auth.urls')),
     path('accounts/login/', auth_views.LoginView.as_view(), name='login'),
-    # path('accounts/', include('django.contrib.auth.urls')),  # login/logout/password reset
+    path('api/mentors/', include('apps.mentors.urls')),
 
 ]
 

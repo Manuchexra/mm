@@ -177,9 +177,6 @@ class UserAccountAPIView(generics.RetrieveAPIView):
         return self.request.user
 
 
-    def get_object(self):
-        return self.request.user
-
 class UserUpdateAPIView(generics.UpdateAPIView):
     queryset = User.objects.all()
     serializer_class = UserUpdateSerializer

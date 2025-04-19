@@ -36,6 +36,7 @@ CUSTOM_APPS = [
     "apps.wishlist",
     "apps.reviews",
     "apps.enrollments",
+    'apps.mentors.apps.MentorsConfig',
 ]
 
 THIRD_PARTY_APPS = [
