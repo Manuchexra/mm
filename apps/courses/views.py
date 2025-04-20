@@ -10,15 +10,18 @@ from .serializers import (
 )
 
 
+from rest_framework import viewsets, parsers
+
 class CourseViewSet(viewsets.ModelViewSet):
     queryset = Course.objects.all()
     permission_classes = [IsAuthenticatedOrReadOnly]
-
+    parser_classes = [parsers.MultiPartParser, parsers.FormParser]  # Rasm yuklash uchun
+    
     def get_serializer_class(self):
         if self.action in ['create', 'update', 'partial_update']:
             return CourseCreateSerializer
         return CourseSerializer
-
+    
     def perform_create(self, serializer):
         serializer.save(instructor=self.request.user)
 

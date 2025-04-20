@@ -290,11 +290,6 @@ class UserAccountAPIView(APIView):
             serializer.save()
             return Response(serializer.data, status=status.HTTP_200_OK)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-
-<<<<<<< HEAD
-=======
-
->>>>>>> bb2edc0be2ed1b9ad2e5be7dab968bf5db164e97
 class UserUpdateAPIView(generics.UpdateAPIView):
     queryset = User.objects.all()
     serializer_class = UserUpdateSerializer

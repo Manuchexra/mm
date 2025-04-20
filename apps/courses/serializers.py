@@ -40,21 +40,17 @@ class CourseSerializer(serializers.ModelSerializer):
 
 
 # === Course Creation ===
+# serializers.py
 class CourseCreateSerializer(serializers.ModelSerializer):
+    category = serializers.PrimaryKeyRelatedField(
+        queryset=Category.objects.all(),
+        required=True
+    )
+    image = serializers.ImageField(required=False)
+
     class Meta:
         model = Course
-        fields = [
-            'title',
-            'description',
-            'category',
-            'price',
-            'image',
-            'is_published'
-        ]
-
-    def create(self, validated_data):
-        user = self.context['request'].user
-        return Course.objects.create(instructor=user, **validated_data)
+        fields = ['title', 'description', 'category', 'price', 'is_published', 'image']
 
 
 # === Category ===
