@@ -15,7 +15,7 @@ from rest_framework import viewsets, parsers
 class CourseViewSet(viewsets.ModelViewSet):
     queryset = Course.objects.all()
     permission_classes = [IsAuthenticatedOrReadOnly]
-    parser_classes = [parsers.MultiPartParser, parsers.FormParser]  # Rasm yuklash uchun
+    parser_classes = [parsers.MultiPartParser, parsers.FormParser] 
     
     def get_serializer_class(self):
         if self.action in ['create', 'update', 'partial_update']:
