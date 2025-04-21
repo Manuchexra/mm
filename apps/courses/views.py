@@ -42,3 +42,18 @@ class LessonViewSet(viewsets.ModelViewSet):
     queryset = Lesson.objects.all()
     serializer_class = LessonSerializer
     permission_classes = [IsAuthenticatedOrReadOnly]
+
+
+# courses/views.py
+from rest_framework.decorators import api_view
+from rest_framework.response import Response
+from .models import Course
+from .serializers import CourseSerializer
+
+@api_view(['GET'])
+def popular_courses(request):
+    popular_courses = Course.objects.annotate(
+        enrollments_count=Count('enrollments')
+    ).order_by('-enrollments_count')[:8]  # Top 8 popular courses
+    serializer = CourseSerializer(popular_courses, many=True)
+    return Response(serializer.data)
