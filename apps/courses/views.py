@@ -54,6 +54,6 @@ from .serializers import CourseSerializer
 def popular_courses(request):
     popular_courses = Course.objects.annotate(
         enrollments_count=Count('enrollments')
-    ).order_by('-enrollments_count')[:8]  # Top 8 popular courses
+    ).order_by('-enrollments_count')[:8] 
     serializer = CourseSerializer(popular_courses, many=True)
     return Response(serializer.data)
