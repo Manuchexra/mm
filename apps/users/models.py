@@ -78,7 +78,6 @@ class User(AbstractUser):
     class Meta:
         db_table = 'users_user'
 
-    # Validators
     validate_email = RegexValidator(
         regex=r'^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$',
         message='Enter a valid email address'
@@ -121,6 +120,7 @@ class User(AbstractUser):
     bio = models.TextField(null=True, blank=True)
     wallet = models.PositiveIntegerField(default=0, null=True)
     email_confirmed = models.BooleanField(default=False)
+    is_mentor = models.BooleanField(default=False)
 
     working_hours = models.ManyToManyField(OpeningTime, related_name='working_hours', blank=True)
     country = models.CharField(max_length=100, blank=True, null=True)
