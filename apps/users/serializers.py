@@ -87,13 +87,15 @@ class UserAccountSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
         fields = ['id', 'username', 'first_name', 'last_name', 'email', 'country', 'gender']
-        read_only_fields = ['id', 'username']  # Faqat o‘qish uchun maydonlar
+        read_only_fields = ['id']  # username o‘zgartirilsa, bu yerdan ham olib tashlanadi
 
     def update(self, instance, validated_data):
-        # Faqat ruxsat berilgan maydonlarni yangilash
+        instance.username = validated_data.get('username', instance.username)
         instance.first_name = validated_data.get('first_name', instance.first_name)
         instance.last_name = validated_data.get('last_name', instance.last_name)
         instance.email = validated_data.get('email', instance.email)
+        instance.country = validated_data.get('country', instance.country)
+        instance.gender = validated_data.get('gender', instance.gender)
         instance.save()
         return instance
 
