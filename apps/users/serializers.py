@@ -86,7 +86,7 @@ class VerifyResetPassword(serializers.Serializer):
 class UserAccountSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
-        fields = ['id', 'username', 'first_name', 'last_name', 'email']
+        fields = ['id', 'username', 'first_name', 'last_name', 'email', 'country', 'gender']
         read_only_fields = ['id', 'username']  # Faqat o‘qish uchun maydonlar
 
     def update(self, instance, validated_data):

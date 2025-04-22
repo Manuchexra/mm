@@ -73,7 +73,6 @@ class OpeningTime(BaseModel):
     start_time = models.TimeField()
     end_time = models.TimeField()
 
-
 class User(AbstractUser):
     class Meta:
         db_table = 'users_user'
@@ -102,6 +101,10 @@ class User(AbstractUser):
         ('buyer', 'Buyer'),
     )
 
+    GENDER_CHOICES = (
+        ('male', 'Male'),
+        ('female', 'Female'),
+    )
     first_name = None
     last_name = None
 
@@ -126,6 +129,7 @@ class User(AbstractUser):
     country = models.CharField(max_length=100, blank=True, null=True)
     specialization = models.CharField(max_length=255, blank=True, null=True)
 
+    gender = models.CharField(max_length=20, choices=GENDER_CHOICES, null=True, blank=True)
     USERNAME_FIELD = 'email'
     REQUIRED_FIELDS = []
 
@@ -144,5 +148,6 @@ class User(AbstractUser):
             "refresh": str(refresh),
             "access": str(refresh.access_token),
         }
+
     def __str__(self):
         return self.username
