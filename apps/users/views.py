@@ -229,7 +229,7 @@ class ConfirmResetCodeView(APIView):
             return Response({"error": "User not found"}, status=404)
 
         cached_code = cache.get(f"confirmation_code_{user.id}")
-        if not cached_code or cached_code != code:
+        if not cached_code or str(cached_code) != str(code): 
             return Response({"error": "Invalid or expired code"}, status=400)
 
         return Response(user.tokens(), status=200)
@@ -297,19 +297,16 @@ class LogoutView(APIView):
         except Exception as e:
             return Response({"error": str(e)}, status=400)
 
-class UserAccountAPIView(generics.RetrieveAPIView):
-    queryset = User.objects.all()
-    serializer_class = UserAccountSerializer
+class UserAccountAPIView(APIView):
     permission_classes = [IsAuthenticated]
 
     @swagger_auto_schema(
         responses={
             200: openapi.Response(
-                description="User account details retrieved successfully",
+                description="Foydalanuvchi ma'lumotlari muvaffaqiyatli olindi",
                 schema=UserAccountSerializer
             ),
-            401: "Unauthorized",
-            404: "User not found"
+            401: "Ruxsatsiz kirish"
         }
     )
     def get(self, request):
@@ -321,6 +318,8 @@ class UserAccountAPIView(generics.RetrieveAPIView):
         request_body=UserAccountSerializer,
         responses={
             200: UserAccountSerializer,
+            400: "Noto‘g‘ri ma'lumotlar kiritildi",
+            401: "Ruxsatsiz kirish"
         }
     )
     def post(self, request):
@@ -330,8 +329,6 @@ class UserAccountAPIView(generics.RetrieveAPIView):
             return Response(serializer.data, status=status.HTTP_200_OK)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
-    def get(self, request, *args, **kwargs):
-        return super().get(request, *args, **kwargs)
 class UserUpdateAPIView(generics.UpdateAPIView):
     queryset = User.objects.all()
     serializer_class = UserUpdateSerializer
