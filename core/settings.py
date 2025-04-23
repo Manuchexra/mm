@@ -51,6 +51,10 @@ THIRD_PARTY_APPS = [
 
 INSTALLED_APPS = DJANGO_APPS + CUSTOM_APPS + THIRD_PARTY_APPS
 
+CORS_ALLOWED_ORIGINS = [
+    "https://manuchehra.pythonanywhere.com",
+]
+
 MIDDLEWARE = [
     "django.middleware.security.SecurityMiddleware",
     "django.contrib.sessions.middleware.SessionMiddleware",
