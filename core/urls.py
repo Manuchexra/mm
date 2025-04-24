@@ -25,7 +25,7 @@ urlpatterns = [
     path('api/enrollments/', include('apps.enrollments.urls')),
     path('api/reviews/', include('apps.reviews.urls')),
     path('api/wishlist/', include('apps.wishlist.urls')),
-    # path('m/', include('django.contrib.auth.urls')),
+    path('api/', include('apps.search.urls')),
     path('accounts/login/', auth_views.LoginView.as_view(), name='login'),
     path('api/mentors/', include('apps.mentors.urls')),
 

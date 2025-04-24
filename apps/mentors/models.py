@@ -4,7 +4,7 @@ from django.db import models
 User = get_user_model()
 
 class Mentor(models.Model):
-    user = models.OneToOneField(User, on_delete=models.CASCADE, related_name='mentor_profile')
+    user = models.OneToOneField(User, on_delete=models.CASCADE)
     avatar = models.ImageField(upload_to='mentors/avatars/', blank=True, null=True)
     bio = models.TextField(blank=True)
     expertise = models.CharField(max_length=100)

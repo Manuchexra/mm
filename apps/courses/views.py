@@ -43,17 +43,34 @@ class LessonViewSet(viewsets.ModelViewSet):
     serializer_class = LessonSerializer
     permission_classes = [IsAuthenticatedOrReadOnly]
 
-
-# courses/views.py
-from rest_framework.decorators import api_view
+# apps/courses/views.py
+from rest_framework.decorators import api_view, action
 from rest_framework.response import Response
+from django.db.models import Count
 from .models import Course
 from .serializers import CourseSerializer
 
+# Agar ViewSet ishlatayotgan bo'lsangiz:
+class CourseViewSet(viewsets.ModelViewSet):
+    queryset = Course.objects.all()
+    serializer_class = CourseSerializer
+
+    @action(detail=False, methods=['GET'])
+    def popular(self, request):
+        popular_courses = Course.objects.annotate(
+            enrollments_count=Count('enrollments')
+        ).order_by('-enrollments_count')[:5]
+        serializer = self.get_serializer(popular_courses, many=True)
+        return Response(serializer.data)
+
+# Yoki alohida funksiya sifatida:
 @api_view(['GET'])
 def popular_courses(request):
     popular_courses = Course.objects.annotate(
         enrollments_count=Count('enrollments')
-    ).order_by('-enrollments_count')[:8] 
+    ).order_by('-enrollments_count')[:5]
     serializer = CourseSerializer(popular_courses, many=True)
     return Response(serializer.data)
+
+
+

@@ -37,6 +37,7 @@ CUSTOM_APPS = [
     "apps.reviews",
     "apps.enrollments",
     'apps.mentors.apps.MentorsConfig',
+    'apps.search',
 ]
 
 THIRD_PARTY_APPS = [
@@ -86,17 +87,6 @@ TEMPLATES = [
 
 WSGI_APPLICATION = "core.wsgi.application"
 
-# Database
-# DATABASES = {
-#     'default': {
-#         'ENGINE': 'django.db.backends.postgresql',  # Correct engine for PostgreSQL
-#         'NAME': 'online_course',              # Replace with your actual DB name
-#         'USER': 'postgres',                        # PostgreSQL username
-#         'PASSWORD': 'Themeister@13',                # PostgreSQL password
-#         'HOST': '13.40.123.211',                     
-#         'PORT': '5432',                           
-#     }
-# }
 
 DATABASES = {
     'default': {

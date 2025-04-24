@@ -24,3 +24,19 @@ class LessonProgress(models.Model):
 
     def __str__(self):
         return f"{self.enrollment.user.username} - {self.lesson.title} ({'Done' if self.completed else 'Pending'})"
+    
+# apps/enrollments/models.py
+from apps.users.models import User
+from apps.courses.models import Course
+
+class Progress(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    course = models.ForeignKey(Course, on_delete=models.CASCADE)
+    completed_lessons = models.PositiveIntegerField(default=0)
+    total_lessons = models.PositiveIntegerField(default=10)  # Kursdagi umumiy darslar soni
+
+    @property
+    def percentage(self):
+        if self.total_lessons == 0:
+            return 0
+        return int((self.completed_lessons / self.total_lessons) * 100)

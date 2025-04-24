@@ -5,7 +5,8 @@ from .views import (
     MyEnrollmentsView,
     MyCourseProgressView,
     CompleteLessonView,
-    EnrollmentViewSet
+    EnrollmentViewSet, 
+    progress
 )
 
 router = DefaultRouter()
@@ -18,6 +19,9 @@ urlpatterns = [
     path('my/', MyEnrollmentsView.as_view(), name='my-enrollments'),
     path('progress/<int:course_id>/', MyCourseProgressView.as_view(), name='course-progress'),
     path('complete/<int:course_id>/', CompleteLessonView.as_view(), name='complete-lesson'),
+    
+    path('api/progress/', progress, name='progress-all'),
+    path('api/progress/<int:course_id>/', progress, name='progress-detail'),
 ]
 
 from rest_framework.authtoken import views as drf_auth_views
