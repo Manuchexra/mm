@@ -107,27 +107,3 @@ class CompleteLessonView(APIView):
         progress.save()
 
         return Response({"message": "Dars muvaffaqiyatli yakunlandi."})
-    
-# apps/enrollments/views.py
-from rest_framework.decorators import api_view, permission_classes
-from rest_framework.permissions import IsAuthenticated
-from rest_framework.response import Response
-from .models import Progress
-from .serializers import ProgressSerializer
-
-@api_view(['GET'])
-@permission_classes([IsAuthenticated])
-def progress(request, course_id=None):
-    if course_id:
-        progress = Progress.objects.get(
-            user=request.user,
-            course_id=course_id
-        )
-    else:
-        progress, _ = Progress.objects.get_or_create(
-            user=request.user,
-            course_id=1  # Agar kurs ID berilmasa, default kurs
-        )
-    
-    serializer = ProgressSerializer(progress)
-    return Response(serializer.data)

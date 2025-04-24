@@ -28,6 +28,7 @@ urlpatterns = [
     path('api/', include('apps.search.urls')),
     path('accounts/login/', auth_views.LoginView.as_view(), name='login'),
     path('api/mentors/', include('apps.mentors.urls')),
+    path('api/', include('apps.progress.urls')),
 
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 # Swagger endpoints

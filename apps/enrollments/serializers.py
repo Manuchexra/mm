@@ -32,17 +32,3 @@ class CompleteLessonSerializer(serializers.Serializer):
         except Lesson.DoesNotExist:
             raise serializers.ValidationError("Bunday dars mavjud emas.")
         return value
-
-
-# apps/enrollments/serializers.py
-from .models import Progress
-
-class ProgressSerializer(serializers.ModelSerializer):
-    percentage = serializers.SerializerMethodField()
-
-    class Meta:
-        model = Progress
-        fields = ['course', 'completed_lessons', 'total_lessons', 'percentage']
-
-    def get_percentage(self, obj):
-        return obj.percentage

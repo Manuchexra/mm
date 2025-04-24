@@ -38,6 +38,7 @@ CUSTOM_APPS = [
     "apps.enrollments",
     'apps.mentors.apps.MentorsConfig',
     'apps.search',
+    'apps.progress',
 ]
 
 THIRD_PARTY_APPS = [
