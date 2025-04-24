@@ -10,4 +10,4 @@ class ProgressSerializer(serializers.ModelSerializer):
         fields = ['id', 'completed_lessons', 'total_lessons', 'user', 'course', 'percentage']  # percentage ni qo'shamiz
     
     def get_percentage(self, obj):
-        return obj.percentage  # Modeldagi propertydan foydalanamiz
+        return obj.percentage  
