@@ -30,20 +30,16 @@ def search(request):
     courses = Course.objects.filter(
         Q(title__icontains=query) | Q(description__icontains=query)
     )
-#     mentors =Mentor.objects.filter(
-#         Q(user__first_name__icontains=query) |
-#         Q(user__last_name__icontains=query)
-# )
-
+    mentors = Mentor.objects.filter(
+        Q(user__username__icontains=query)
+    )
 
     if request.user.is_authenticated:
         SearchHistory.objects.create(query=query, user=request.user)
 
     serializer = SearchResultSerializer({
         'courses': courses,
-        'mentors': None
-    })
+        'mentors': mentors
+    }, context={'request': request})  # Pass request to serializer
 
     return Response(serializer.data)
-
-

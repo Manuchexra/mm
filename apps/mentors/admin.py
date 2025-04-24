@@ -5,9 +5,9 @@ from .models import Mentor
 
 @admin.register(Mentor)
 class MentorAdmin(admin.ModelAdmin):
-    list_display = ('user', 'avatar_preview', 'expertise', 'is_top_mentor')
-    list_filter = ('is_top_mentor', 'expertise')
-    search_fields = ('user__username', 'user__email', 'expertise')
+    list_display = ('full_name', 'expertise', 'rating', 'is_top_mentor')
+    list_filter = ('expertise', 'is_top_mentor')
+    search_fields = ('user__first_name', 'user__last_name', 'bio')
 
     def avatar_preview(self, obj):
         if obj.avatar:
