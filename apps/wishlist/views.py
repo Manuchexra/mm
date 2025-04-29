@@ -7,9 +7,9 @@ class WishlistViewSet(viewsets.ModelViewSet):
     permission_classes = [permissions.IsAuthenticated]
 
     def get_queryset(self):
-        if getattr(self, 'swagger_fake_view', False):
-            return Wishlist.objects.none()  # Swagger uchun bo'sh queryset
-        return Wishlist.objects.filter(user=self.request.user)
+        # if getattr(self, 'swagger_fake_view', False):
+        #     return Wishlist.objects.none()  # Swagger uchun bo'sh queryset
+        return Wishlist.objects.all()
 
 
     def perform_create(self, serializer):

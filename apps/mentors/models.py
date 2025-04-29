@@ -2,8 +2,8 @@ from django.contrib.auth import get_user_model
 from django.db import models
 from django.utils.translation import gettext_lazy as _
 from django.core.validators import MinValueValidator, MaxValueValidator
+from apps.users.models import User
 
-User = get_user_model()
 
 class Mentor(models.Model):
     class ExpertiseArea(models.TextChoices):
@@ -90,7 +90,13 @@ class Mentor(models.Model):
 
     @property
     def full_name(self):
-        return self.user.get_full_name()
+        if self.user.full_name:  # Check the custom full_name field
+            return self.user.username
+        elif self.user.email:
+            return self.user.email.split('@')[0]
+        elif self.user.phone_number:
+            return f"User-{self.user.phone_number[-4:]}"
+        return self.user.username
 
     @property
     def email(self):
