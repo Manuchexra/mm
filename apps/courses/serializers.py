@@ -22,14 +22,16 @@ class SectionSerializer(serializers.ModelSerializer):
 class CourseSerializer(serializers.ModelSerializer):
     instructor = serializers.StringRelatedField(read_only=True)
     sections = SectionSerializer(many=True, read_only=True)
-
+    category_name = serializers.CharField(source='category.name', read_only=True)
+    
     class Meta:
         model = Course
         fields = [
             'id',
             'title',
             'description',
-            'category',
+            'category',          # kategoriya IDsi
+            'category_name',     # kategoriya nomi
             'price',
             'image',
             'is_published',
