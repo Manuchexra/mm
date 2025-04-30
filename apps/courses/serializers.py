@@ -1,5 +1,6 @@
 from rest_framework import serializers
 from .models import Category, Course, Section, Lesson
+from apps.wishlist.models import Wishlist
 
 
 # === Lesson ===
@@ -23,6 +24,7 @@ class CourseSerializer(serializers.ModelSerializer):
     instructor = serializers.StringRelatedField(read_only=True)
     sections = SectionSerializer(many=True, read_only=True)
     category_name = serializers.CharField(source='category.name', read_only=True)
+    is_in_wishlist = serializers.SerializerMethodField()  # Moved outside Meta
     
     class Meta:
         model = Course
@@ -38,7 +40,14 @@ class CourseSerializer(serializers.ModelSerializer):
             'created_at',
             'instructor',
             'sections',
+            'is_in_wishlist'     # Wishlist statusi
         ]
+    
+    def get_is_in_wishlist(self, obj):
+        request = self.context.get('request')
+        if request and request.user.is_authenticated:
+            return Wishlist.objects.filter(user=request.user, course=obj).exists()
+        return False
 
 
 # === Course Creation ===

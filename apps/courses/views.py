@@ -1,4 +1,5 @@
-from rest_framework import viewsets, permissions
+from rest_framework import viewsets, permissions, parsers
+from django_filters import rest_framework as filters
 from rest_framework import viewsets, permissions, parsers
 from rest_framework.permissions import IsAuthenticatedOrReadOnly  # Bu qatorni qo'shing
 from rest_framework.decorators import action
@@ -13,11 +14,85 @@ from .serializers import (
     SectionSerializer,
     LessonSerializer
 )
+from rest_framework.pagination import LimitOffsetPagination
+from drf_yasg import openapi
+from drf_yasg.utils import swagger_auto_schema
 
 class CourseViewSet(viewsets.ModelViewSet):
-    queryset = Course.objects.all()
+    queryset = Course.objects.all().select_related('category', 'instructor')
     permission_classes = [IsAuthenticatedOrReadOnly]
     parser_classes = [parsers.MultiPartParser, parsers.FormParser]
+    pagination_class = LimitOffsetPagination
+
+    @swagger_auto_schema(
+        methods=['POST', 'DELETE'],
+        manual_parameters=[
+            openapi.Parameter(
+                'id',
+                openapi.IN_PATH,
+                description="Course ID",
+                type=openapi.TYPE_INTEGER
+            )
+        ],
+        responses={
+            200: 'Wishlist status changed successfully',
+            400: 'Bad request',
+            401: 'Unauthorized'
+        }
+    )
+    @action(detail=True, methods=['POST', 'DELETE'], permission_classes=[permissions.IsAuthenticated])
+    def wishlist(self, request, pk=None):
+        course = self.get_object()
+        
+        if request.method == 'POST':
+            wishlist_item, created = Wishlist.objects.get_or_create(
+                user=request.user,
+                course=course
+            )
+            if created:
+                return Response({'status': 'added to wishlist'}, status=status.HTTP_201_CREATED)
+            return Response({'status': 'already in wishlist'}, status=status.HTTP_200_OK)
+        
+        elif request.method == 'DELETE':
+            deleted, _ = Wishlist.objects.filter(
+                user=request.user,
+                course=course
+            ).delete()
+            if deleted:
+                return Response({'status': 'removed from wishlist'}, status=status.HTTP_200_OK)
+            return Response({'status': 'not in wishlist'}, status=status.HTTP_404_NOT_FOUND)
+    
+    @swagger_auto_schema(
+        responses={200: CourseSerializer(many=True)},
+        manual_parameters=[
+            openapi.Parameter(
+                'limit',
+                openapi.IN_QUERY,
+                description="Number of results per page",
+                type=openapi.TYPE_INTEGER
+            ),
+            openapi.Parameter(
+                'offset',
+                openapi.IN_QUERY,
+                description="Initial index for pagination",
+                type=openapi.TYPE_INTEGER
+            )
+        ]
+    )
+    @action(detail=False, methods=['GET'], permission_classes=[permissions.IsAuthenticated])
+    def my_wishlist(self, request):
+        """Get current user's wishlist"""
+        queryset = Course.objects.filter(
+            wishlisted_by__user=request.user
+        ).order_by('-wishlisted_by__created_at')
+        
+        page = self.paginate_queryset(queryset)
+        if page is not None:
+            serializer = self.get_serializer(page, many=True)
+            return self.get_paginated_response(serializer.data)
+        
+        serializer = self.get_serializer(queryset, many=True)
+        return Response(serializer.data)
     
     def get_serializer_class(self):
         if self.action in ['create', 'update', 'partial_update']:
@@ -27,34 +102,99 @@ class CourseViewSet(viewsets.ModelViewSet):
     def perform_create(self, serializer):
         serializer.save(instructor=self.request.user)
 
+    def get_queryset(self):
+        queryset = super().get_queryset()
+        
+        # Category filter
+        if 'category_id' in self.request.GET:
+            queryset = queryset.filter(category__id=self.request.GET['category_id'])
+            
+        return queryset
+
+    @swagger_auto_schema(
+        manual_parameters=[
+            openapi.Parameter(
+                'category_id',
+                openapi.IN_QUERY,
+                description="Filter by category ID",
+                type=openapi.TYPE_INTEGER
+            ),
+            openapi.Parameter(
+                'limit',
+                openapi.IN_QUERY,
+                description="Number of results per page",
+                type=openapi.TYPE_INTEGER
+            ),
+            openapi.Parameter(
+                'offset',
+                openapi.IN_QUERY,
+                description="Initial index for pagination",
+                type=openapi.TYPE_INTEGER
+            )
+        ]
+    )
+    def list(self, request, *args, **kwargs):
+        """
+        Get list of courses with optional filtering and pagination
+        
+        Parameters:
+        - category_id: Filter by category ID (optional)
+        - limit: Number of items per page (optional)
+        - offset: Starting index for pagination (optional)
+        """
+        queryset = self.filter_queryset(self.get_queryset())
+        page = self.paginate_queryset(queryset)
+        if page is not None:
+            serializer = self.get_serializer(page, many=True)
+            return self.get_paginated_response(serializer.data)
+        serializer = self.get_serializer(queryset, many=True)
+        return Response(serializer.data)
+
+    @swagger_auto_schema(
+        manual_parameters=[
+            openapi.Parameter(
+                'category_id',
+                openapi.IN_QUERY,
+                description="Filter by category ID",
+                type=openapi.TYPE_INTEGER
+            ),
+            openapi.Parameter(
+                'limit',
+                openapi.IN_QUERY,
+                description="Number of results per page",
+                type=openapi.TYPE_INTEGER
+            ),
+            openapi.Parameter(
+                'offset',
+                openapi.IN_QUERY,
+                description="Initial index for pagination",
+                type=openapi.TYPE_INTEGER
+            )
+        ]
+    )
     @action(detail=False, methods=['GET'])
     def popular(self, request):
-        """Get 5 most popular courses by enrollment count"""
-        popular_courses = Course.objects.annotate(
+        """
+        Get popular courses with optional filtering and pagination
+        
+        Parameters:
+        - category_id: Filter by category ID (optional)
+        - limit: Number of items per page (optional)
+        - offset: Starting index for pagination (optional)
+        """
+        queryset = self.get_queryset().annotate(
             enrollments_count=Count('enrollments')
-        ).order_by('-enrollments_count')[:5]
-        serializer = self.get_serializer(popular_courses, many=True)
+        ).order_by('-enrollments_count')
+        
+        page = self.paginate_queryset(queryset)
+        if page is not None:
+            serializer = self.get_serializer(page, many=True)
+            return self.get_paginated_response(serializer.data)
+            
+        serializer = self.get_serializer(queryset, many=True)
         return Response(serializer.data)
 
-    @action(detail=False, methods=['GET'], url_path='category/(?P<category_id>[0-9]+)')
-    def by_category_id(self, request, category_id=None):
-        """Get courses by category ID"""
-        try:
-            category_id = int(category_id)
-            category = get_object_or_404(Category, id=category_id)
-            courses = self.queryset.filter(category=category)
-            serializer = self.get_serializer(courses, many=True)
-            return Response(serializer.data)
-        except ValueError:
-            return Response({"error": "Invalid category ID"}, status=400)
-
-    @action(detail=False, methods=['GET'], url_path='slug/(?P<category_slug>[-\w]+)')
-    def by_category_slug(self, request, category_slug=None):
-        """Get courses by category slug"""
-        category = get_object_or_404(Category, slug=category_slug)
-        courses = self.queryset.filter(category=category)
-        serializer = self.get_serializer(courses, many=True)
-        return Response(serializer.data)
+    
 
 class CategoryViewSet(viewsets.ReadOnlyModelViewSet):
     queryset = Category.objects.all()

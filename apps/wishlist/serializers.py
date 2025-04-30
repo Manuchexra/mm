@@ -1,17 +1,39 @@
+# serializers.py
 from rest_framework import serializers
-from .models import Wishlist  # 🟢 To‘g‘ri
+from .models import Wishlist
+from apps.courses.models import Course
+from apps.courses.serializers import CourseSerializer
 
-class WishlistSerializer(serializers.ModelSerializer):  # ✅ SHU BO‘LISHI KERAK
-    user = serializers.StringRelatedField(read_only=True)
-    course_title = serializers.CharField(source='course.title', read_only=True)
-    course_image = serializers.ImageField(source='course.image', read_only=True)
+class WishlistSerializer(serializers.ModelSerializer):
+    course_id = serializers.IntegerField(source='course.id')
+    course_title = serializers.CharField(source='course.title')
+    course_image = serializers.ImageField(source='course.image')
+    category_name = serializers.CharField(source='course.category.name')
+    price = serializers.DecimalField(source='course.price', max_digits=10, decimal_places=2)
     instructor = serializers.CharField(source='course.instructor.username', read_only=True)
+    # user_id = serializers.IntegerField(source='user.id', read_only=True)
+    created_at = serializers.DateTimeField(format='%Y-%m-%d %H:%M:%S')
 
     class Meta:
         model = Wishlist
-        fields = ['id', 'course', 'course_title', 'course_image', 'instructor', 'user', 'created_at']
-        read_only_fields = ['user', 'created_at']
+        fields = [
+            'id',
+            # 'user_id',
+            'course_id',
+            'course_title',
+            'course_image',
+            'category_name',  # Yangi qo'shildi
+            'price',          # Yangi qo'shildi
+            'instructor',
+            'created_at'
+        ]
+        read_only_fields = fields
 
-    def create(self, validated_data):
-        user = self.context['request'].user
-        return Wishlist.objects.create(user=user, **validated_data)
+
+
+class WishlistCreateSerializer(serializers.Serializer):
+    course_id = serializers.PrimaryKeyRelatedField(
+        queryset=Course.objects.all(),
+        write_only=True,
+        source='course'
+    )
