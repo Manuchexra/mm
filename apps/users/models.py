@@ -151,3 +151,65 @@ class User(AbstractUser):
 
     def __str__(self):
         return self.username
+    
+
+class UserCard(BaseModel):
+    """Foydalanuvchi kredit kartalari"""
+    CARD_TYPES = (
+        ('uzcard', 'Uzcard'),
+        ('humo', 'Humo'),
+        ('visa', 'Visa'),
+        ('mastercard', 'Mastercard'),
+        ('unionpay', 'UnionPay'),
+    )
+
+    user = models.ForeignKey(
+        User, 
+        on_delete=models.CASCADE,
+        related_name='cards'
+    )
+    card_type = models.CharField(
+        max_length=20, 
+        choices=CARD_TYPES,
+        verbose_name="Karta turi"
+    )
+    card_number = models.CharField(
+        max_length=16,
+        verbose_name="Karta raqami"
+    )
+    expire_date = models.CharField(
+        max_length=5,  # MM/YY formatida
+        verbose_name="Amal qilish muddati"
+    )
+    card_holder = models.CharField(
+        max_length=100,
+        verbose_name="Karta egasi"
+    )
+    is_default = models.BooleanField(
+        default=False,
+        verbose_name="Asosiy karta"
+    )
+    is_active = models.BooleanField(
+        default=True,
+        verbose_name="Faol"
+    )
+
+    class Meta:
+        db_table = 'users_card'
+        verbose_name = "Foydalanuvchi kartasi"
+        verbose_name_plural = "Foydalanuvchi kartalari"
+        ordering = ['-is_default', '-created_at']
+        unique_together = ['user', 'card_number']
+
+    def __str__(self):
+        return f"{self.get_card_type_display()} •••• {self.card_number[-4:]}"
+
+    def save(self, *args, **kwargs):
+        """Asosiy karta sifatida saqlashda boshqa kartalarni is_default=False qilish"""
+        if self.is_default:
+            UserCard.objects.filter(user=self.user).exclude(pk=self.pk).update(is_default=False)
+        super().save(*args, **kwargs)
+
+    def mask_card_number(self):
+        """Karta raqamini yashirish"""
+        return f"•••• •••• •••• {self.card_number[-4:]}"

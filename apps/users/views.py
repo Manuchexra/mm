@@ -348,3 +348,45 @@ class UserUpdateAPIView(generics.UpdateAPIView):
     )
     def put(self, request, *args, **kwargs):
         return super().put(request, *args, **kwargs)
+    
+
+from rest_framework import generics, permissions, status
+from rest_framework.response import Response
+from .models import UserCard
+from .serializers import UserCardSerializer
+
+class UserCardListView(generics.ListCreateAPIView):
+    serializer_class = UserCardSerializer
+    permission_classes = [permissions.IsAuthenticated]
+
+    def get_queryset(self):
+        return UserCard.objects.filter(user=self.request.user, is_active=True)
+
+    def perform_create(self, serializer):
+        serializer.save(user=self.request.user)
+
+class UserCardDetailView(generics.RetrieveUpdateDestroyAPIView):
+    serializer_class = UserCardSerializer
+    permission_classes = [permissions.IsAuthenticated]
+
+    def get_queryset(self):
+        return UserCard.objects.filter(user=self.request.user)
+
+    def perform_destroy(self, instance):
+        """O'chirish o'rniga is_active=False qilish"""
+        instance.is_active = False
+        instance.save()
+
+class SetDefaultCardView(generics.UpdateAPIView):
+    serializer_class = UserCardSerializer
+    permission_classes = [permissions.IsAuthenticated]
+    http_method_names = ['patch']
+
+    def get_queryset(self):
+        return UserCard.objects.filter(user=self.request.user)
+
+    def patch(self, request, *args, **kwargs):
+        card = self.get_object()
+        card.is_default = True
+        card.save()
+        return Response(self.get_serializer(card).data)

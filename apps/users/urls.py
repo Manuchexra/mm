@@ -8,7 +8,10 @@ from .views import (
     LogoutView,
     UserAccountAPIView,
     UserUpdateAPIView,
-    LoginAPIView
+    LoginAPIView,
+    UserCardListView,
+    UserCardDetailView, 
+    SetDefaultCardView
 )
 
 urlpatterns = [
@@ -21,4 +24,7 @@ urlpatterns = [
     path('account', UserAccountAPIView.as_view(), name='user-account'),
     path('account/update/<int:pk>/', UserUpdateAPIView.as_view()),
     path('login/', LoginAPIView.as_view()),
+    path('cards/', UserCardListView.as_view(), name='user-card-list'),
+    path('cards/<int:pk>/', UserCardDetailView.as_view(), name='user-card-detail'),
+    path('cards/<int:pk>/set-default/', SetDefaultCardView.as_view(), name='set-default-card'),
 ]

@@ -104,3 +104,47 @@ class UserUpdateSerializer(serializers.ModelSerializer):
         model = models.User
         fields = "__all__"
 
+
+from rest_framework import serializers
+from .models import UserCard
+
+class UserCardSerializer(serializers.ModelSerializer):
+    masked_number = serializers.SerializerMethodField()
+    card_type_display = serializers.SerializerMethodField()
+
+    class Meta:
+        model = UserCard
+        fields = [
+            'id',
+            'card_type',
+            'card_type_display',
+            'card_number',
+            'masked_number',
+            'expire_date',
+            'card_holder',
+            'is_default',
+            'is_active',
+            'created_at'
+        ]
+        extra_kwargs = {
+            'card_number': {'write_only': True}
+        }
+
+    def get_masked_number(self, obj):
+        return obj.mask_card_number()
+
+    def get_card_type_display(self, obj):
+        return obj.get_card_type_display()
+
+    def validate_card_number(self, value):
+        """Karta raqamini tekshirish"""
+        if not value.isdigit() or len(value) not in (16, 19):
+            raise serializers.ValidationError("Noto'g'ri karta raqami formati")
+        return value
+
+    def validate_expire_date(self, value):
+        """Amal qilish muddatini tekshirish"""
+        if len(value) != 5 or value[2] != '/':
+            raise serializers.ValidationError("Noto'g'ri format. MM/YY ko'rinishida bo'lishi kerak")
+        return value
+

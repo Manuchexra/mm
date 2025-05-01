@@ -39,6 +39,7 @@ CUSTOM_APPS = [
     'apps.mentors.apps.MentorsConfig',
     'apps.search',
     'apps.progress',
+    'apps.payments',
 ]
 
 THIRD_PARTY_APPS = [
