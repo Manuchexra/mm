@@ -40,6 +40,7 @@ CUSTOM_APPS = [
     'apps.search',
     'apps.progress',
     'apps.payments',
+    'apps.notifications',
 ]
 
 THIRD_PARTY_APPS = [

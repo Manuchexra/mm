@@ -30,6 +30,7 @@ urlpatterns = [
     path('api/mentors/', include('apps.mentors.urls')),
     path('api/', include('apps.progress.urls')),
     path('api/payments/', include('apps.payments.urls')),
+    path('api/notifications/', include('apps.notifications.urls')),
 
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 # Swagger endpoints
