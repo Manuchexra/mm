@@ -1,11 +1,9 @@
 from rest_framework import viewsets, permissions, parsers, status
 from django_filters import rest_framework as filters
-from rest_framework import viewsets, permissions, parsers
-from rest_framework.permissions import IsAuthenticatedOrReadOnly  # Bu qatorni qo'shing
+from rest_framework.permissions import IsAuthenticatedOrReadOnly
 from rest_framework.decorators import action
 from rest_framework.response import Response
-from django.shortcuts import get_object_or_404
-from django.db.models import Count
+from django.db.models import Count, Q
 from apps.wishlist.models import Wishlist
 from .models import Course, Category, Section, Lesson
 from .serializers import (
@@ -26,69 +24,86 @@ class CourseViewSet(viewsets.ModelViewSet):
     pagination_class = LimitOffsetPagination
 
     @swagger_auto_schema(
-    methods=['POST'],
-    manual_parameters=[
-        openapi.Parameter(
-            'id', 
-            openapi.IN_PATH,
-            description="Course ID",
-            type=openapi.TYPE_INTEGER
-        )
-    ],
-    responses={
-        201: openapi.Response('Course added to wishlist'),
-        200: openapi.Response('Course already in wishlist'),
-        401: openapi.Response('Unauthorized'),
-        404: openapi.Response('Course not found')
-    }
-)
-    @action(detail=True, methods=['POST'], permission_classes=[permissions.IsAuthenticated])
-    def wishlist(self, request, pk=None):
-        """
-        Add course to wishlist (only requires course ID in URL)
-        ---
-        Example request:
-        POST /api/courses/1/wishlist/
-        """
-        course = self.get_object()
-        wishlist_item, created = Wishlist.objects.get_or_create(
-            user=request.user,
-            course=course
-        )
-        if created:
-            return Response(
-                {'status': 'added to wishlist', 'course_id': course.id},
-                status=status.HTTP_201_CREATED
+        methods=['POST', 'DELETE'],
+        manual_parameters=[
+            openapi.Parameter(
+                'id',
+                openapi.IN_PATH,
+                description="Course ID",
+                type=openapi.TYPE_INTEGER
             )
-        return Response(
-            {'status': 'already in wishlist', 'course_id': course.id},
-            status=status.HTTP_200_OK
-        )
-   
+        ],
+        responses={
+            200: 'Wishlist status changed successfully',
+            400: 'Bad request',
+            401: 'Unauthorized'
+        }
+    )
+    @action(detail=True, methods=['POST', 'DELETE'], permission_classes=[permissions.IsAuthenticated])
+    def wishlist(self, request, pk=None):
+        course = self.get_object()
+        
+        if request.method == 'DELETE':
+            deleted, _ = Wishlist.objects.filter(
+                user=request.user,
+                course=course
+            ).delete()
+            if deleted:
+                return Response({'status': 'removed from wishlist'}, status=status.HTTP_200_OK)
+            return Response({'status': 'not in wishlist'}, status=status.HTTP_404_NOT_FOUND)
     
     @swagger_auto_schema(
         responses={200: CourseSerializer(many=True)},
         manual_parameters=[
             openapi.Parameter(
+                'category_id',
+                openapi.IN_QUERY,
+                description="Filter by category ID",
+                type=openapi.TYPE_INTEGER,
+                required=False
+            ),
+            openapi.Parameter(
+                'search',
+                openapi.IN_QUERY,
+                description="A search term",
+                type=openapi.TYPE_STRING,
+                required=False
+            ),
+            openapi.Parameter(
                 'limit',
                 openapi.IN_QUERY,
                 description="Number of results per page",
-                type=openapi.TYPE_INTEGER
+                type=openapi.TYPE_INTEGER,
+                required=False
             ),
             openapi.Parameter(
                 'offset',
                 openapi.IN_QUERY,
                 description="Initial index for pagination",
-                type=openapi.TYPE_INTEGER
+                type=openapi.TYPE_INTEGER,
+                required=False
             )
         ]
     )
     @action(detail=False, methods=['GET'], permission_classes=[permissions.IsAuthenticated])
     def my_wishlist(self, request):
-        """Get current user's wishlist"""
+        """Get current user's wishlist with optional category filtering"""
         queryset = Course.objects.filter(
             wishlisted_by__user=request.user
         ).order_by('-wishlisted_by__created_at')
+        
+        # Add category filter
+        category_id = request.query_params.get('category_id')
+        if category_id:
+            queryset = queryset.filter(category__id=category_id)
+            
+        # Add search filter if needed
+        search_term = request.query_params.get('search')
+        if search_term:
+            queryset = queryset.filter(
+                Q(title__icontains=search_term) | 
+                Q(description__icontains=search_term)
+            )
         
         page = self.paginate_queryset(queryset)
         if page is not None:
@@ -198,8 +213,6 @@ class CourseViewSet(viewsets.ModelViewSet):
         serializer = self.get_serializer(queryset, many=True)
         return Response(serializer.data)
 
-    
-
 class CategoryViewSet(viewsets.ReadOnlyModelViewSet):
     queryset = Category.objects.all()
     serializer_class = CategorySerializer
@@ -214,3 +227,4 @@ class LessonViewSet(viewsets.ModelViewSet):
     queryset = Lesson.objects.all()
     serializer_class = LessonSerializer
     permission_classes = [IsAuthenticatedOrReadOnly]
+    
