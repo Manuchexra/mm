@@ -1,9 +1,8 @@
+# apps/search/urls.py
 from django.urls import path
-from .views import search
-
-app_name = 'search'
+from .views import search, search_with_filters
 
 urlpatterns = [
-    path('search/', search, name='search-api'),
-    
+    path('', search, name='search'),
+    path('filter/', search_with_filters, name='search-filter'),
 ]

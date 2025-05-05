@@ -12,3 +12,10 @@ class SearchHistory(models.Model):
         return f"{self.user.username} searched: {self.query}"
 
 
+# apps/search/models.py
+class FilterOptions(models.Model):
+    name = models.CharField(max_length=100)  # Kategoriya nomi
+    slug = models.SlugField(unique=True)     # URL uchun
+    
+    def __str__(self):
+        return self.name
