@@ -24,7 +24,7 @@ class CourseViewSet(viewsets.ModelViewSet):
     pagination_class = LimitOffsetPagination
 
     @swagger_auto_schema(
-        methods=['POST', 'DELETE'],
+        methods=['DELETE'],
         manual_parameters=[
             openapi.Parameter(
                 'id',
@@ -39,18 +39,19 @@ class CourseViewSet(viewsets.ModelViewSet):
             401: 'Unauthorized'
         }
     )
-    @action(detail=True, methods=['POST', 'DELETE'], permission_classes=[permissions.IsAuthenticated])
+    @action(detail=True, methods=['DELETE'], permission_classes=[permissions.IsAuthenticated])
     def wishlist(self, request, pk=None):
+        """
+        Remove course from user's wishlist (DELETE only)
+        """
         course = self.get_object()
-        
-        if request.method == 'DELETE':
-            deleted, _ = Wishlist.objects.filter(
-                user=request.user,
-                course=course
-            ).delete()
-            if deleted:
-                return Response({'status': 'removed from wishlist'}, status=status.HTTP_200_OK)
-            return Response({'status': 'not in wishlist'}, status=status.HTTP_404_NOT_FOUND)
+        deleted, _ = Wishlist.objects.filter(
+            user=request.user,
+            course=course
+        ).delete()
+        if deleted:
+            return Response({'status': 'removed from wishlist'}, status=status.HTTP_200_OK)
+        return Response({'status': 'not in wishlist'}, status=status.HTTP_404_NOT_FOUND)
     
     @swagger_auto_schema(
         responses={200: CourseSerializer(many=True)},
@@ -87,17 +88,19 @@ class CourseViewSet(viewsets.ModelViewSet):
     )
     @action(detail=False, methods=['GET'], permission_classes=[permissions.IsAuthenticated])
     def my_wishlist(self, request):
-        """Get current user's wishlist with optional category filtering"""
+        """
+        Get current user's wishlist with optional filtering
+        """
         queryset = Course.objects.filter(
             wishlisted_by__user=request.user
         ).order_by('-wishlisted_by__created_at')
         
-        # Add category filter
+        # Category filter
         category_id = request.query_params.get('category_id')
         if category_id:
             queryset = queryset.filter(category__id=category_id)
             
-        # Add search filter if needed
+        # Search filter
         search_term = request.query_params.get('search')
         if search_term:
             queryset = queryset.filter(
@@ -155,11 +158,6 @@ class CourseViewSet(viewsets.ModelViewSet):
     def list(self, request, *args, **kwargs):
         """
         Get list of courses with optional filtering and pagination
-        
-        Parameters:
-        - category_id: Filter by category ID (optional)
-        - limit: Number of items per page (optional)
-        - offset: Starting index for pagination (optional)
         """
         queryset = self.filter_queryset(self.get_queryset())
         page = self.paginate_queryset(queryset)
@@ -194,12 +192,7 @@ class CourseViewSet(viewsets.ModelViewSet):
     @action(detail=False, methods=['GET'])
     def popular(self, request):
         """
-        Get popular courses with optional filtering and pagination
-        
-        Parameters:
-        - category_id: Filter by category ID (optional)
-        - limit: Number of items per page (optional)
-        - offset: Starting index for pagination (optional)
+        Get popular courses ordered by enrollment count
         """
         queryset = self.get_queryset().annotate(
             enrollments_count=Count('enrollments')
@@ -227,4 +220,3 @@ class LessonViewSet(viewsets.ModelViewSet):
     queryset = Lesson.objects.all()
     serializer_class = LessonSerializer
     permission_classes = [IsAuthenticatedOrReadOnly]
-    
