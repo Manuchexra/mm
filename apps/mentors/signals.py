@@ -10,3 +10,11 @@ User = get_user_model()
 def create_mentor_profile(sender, instance, created, **kwargs):
     if created and instance.is_mentor:  # Agar User modelida is_mentor maydoni bo'lsa
         Mentor.objects.create(user=instance)
+
+from django.db.models.signals import pre_save
+from django.dispatch import receiver
+
+@receiver(pre_save, sender=User)
+def set_full_name(sender, instance, **kwargs):
+    if not instance.full_name:
+        instance.full_name = instance.username

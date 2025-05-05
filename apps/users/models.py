@@ -105,14 +105,13 @@ class User(AbstractUser):
         ('male', 'Male'),
         ('female', 'Female'),
     )
-    first_name = None
-    last_name = None
+    first_name = models.CharField(max_length=150, blank=True, null=True)
+    last_name = models.CharField(max_length=150, blank=True, null=True)
+    full_name = models.CharField(max_length=255, blank=True)
 
     username = models.CharField(max_length=150, unique=True)
     phone_number = models.CharField(max_length=13, unique=True, null=True, blank=True)
     email = models.EmailField(unique=True, null=True, blank=True)
-
-    full_name = models.CharField(max_length=255, blank=True, null=True)
 
     auth_type = models.CharField(max_length=20, choices=AUTH_TYPE)
     auth_role = models.CharField(max_length=20, choices=AUTH_ROLE, default='buyer')
@@ -151,6 +150,14 @@ class User(AbstractUser):
 
     def __str__(self):
         return self.username
+    def save(self, *args, **kwargs):
+        # full_name ni avtomatik to'ldirish
+        if not self.full_name:
+            if self.first_name or self.last_name:
+                self.full_name = f"{self.first_name or ''} {self.last_name or ''}".strip()
+            elif self.username:
+                self.full_name = self.username
+        super().save(*args, **kwargs)
     
 
 class UserCard(BaseModel):
@@ -213,3 +220,8 @@ class UserCard(BaseModel):
     def mask_card_number(self):
         """Karta raqamini yashirish"""
         return f"•••• •••• •••• {self.card_number[-4:]}"
+    def save(self, *args, **kwargs):
+        # full_name ni avtomatik to'ldirish
+        if not self.full_name and self.username:
+            self.full_name = self.username
+        super().save(*args, **kwargs)

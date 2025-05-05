@@ -1,4 +1,4 @@
-from rest_framework import viewsets, permissions, parsers
+from rest_framework import viewsets, permissions, parsers, status
 from django_filters import rest_framework as filters
 from rest_framework import viewsets, permissions, parsers
 from rest_framework.permissions import IsAuthenticatedOrReadOnly  # Bu qatorni qo'shing
@@ -6,6 +6,7 @@ from rest_framework.decorators import action
 from rest_framework.response import Response
 from django.shortcuts import get_object_or_404
 from django.db.models import Count
+from apps.wishlist.models import Wishlist
 from .models import Course, Category, Section, Lesson
 from .serializers import (
     CourseSerializer,
@@ -25,42 +26,45 @@ class CourseViewSet(viewsets.ModelViewSet):
     pagination_class = LimitOffsetPagination
 
     @swagger_auto_schema(
-        methods=['POST', 'DELETE'],
-        manual_parameters=[
-            openapi.Parameter(
-                'id',
-                openapi.IN_PATH,
-                description="Course ID",
-                type=openapi.TYPE_INTEGER
-            )
-        ],
-        responses={
-            200: 'Wishlist status changed successfully',
-            400: 'Bad request',
-            401: 'Unauthorized'
-        }
-    )
-    @action(detail=True, methods=['POST', 'DELETE'], permission_classes=[permissions.IsAuthenticated])
+    methods=['POST'],
+    manual_parameters=[
+        openapi.Parameter(
+            'id', 
+            openapi.IN_PATH,
+            description="Course ID",
+            type=openapi.TYPE_INTEGER
+        )
+    ],
+    responses={
+        201: openapi.Response('Course added to wishlist'),
+        200: openapi.Response('Course already in wishlist'),
+        401: openapi.Response('Unauthorized'),
+        404: openapi.Response('Course not found')
+    }
+)
+    @action(detail=True, methods=['POST'], permission_classes=[permissions.IsAuthenticated])
     def wishlist(self, request, pk=None):
+        """
+        Add course to wishlist (only requires course ID in URL)
+        ---
+        Example request:
+        POST /api/courses/1/wishlist/
+        """
         course = self.get_object()
-        
-        if request.method == 'POST':
-            wishlist_item, created = Wishlist.objects.get_or_create(
-                user=request.user,
-                course=course
+        wishlist_item, created = Wishlist.objects.get_or_create(
+            user=request.user,
+            course=course
+        )
+        if created:
+            return Response(
+                {'status': 'added to wishlist', 'course_id': course.id},
+                status=status.HTTP_201_CREATED
             )
-            if created:
-                return Response({'status': 'added to wishlist'}, status=status.HTTP_201_CREATED)
-            return Response({'status': 'already in wishlist'}, status=status.HTTP_200_OK)
-        
-        elif request.method == 'DELETE':
-            deleted, _ = Wishlist.objects.filter(
-                user=request.user,
-                course=course
-            ).delete()
-            if deleted:
-                return Response({'status': 'removed from wishlist'}, status=status.HTTP_200_OK)
-            return Response({'status': 'not in wishlist'}, status=status.HTTP_404_NOT_FOUND)
+        return Response(
+            {'status': 'already in wishlist', 'course_id': course.id},
+            status=status.HTTP_200_OK
+        )
+   
     
     @swagger_auto_schema(
         responses={200: CourseSerializer(many=True)},

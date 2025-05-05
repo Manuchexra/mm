@@ -90,7 +90,7 @@ class Mentor(models.Model):
 
     @property
     def full_name(self):
-        if self.user.full_name:  # Check the custom full_name field
+        if self.user.full_name:  # Bu yerda user modelida full_name maydoni bor deb faraz qilinayotgan
             return self.user.username
         elif self.user.email:
             return self.user.email.split('@')[0]

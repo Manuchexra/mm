@@ -1,6 +1,7 @@
 from rest_framework import serializers
 from .models import Category, Course, Section, Lesson
 from apps.wishlist.models import Wishlist
+from apps.mentors.serializers import MentorSerializer
 
 
 # === Lesson ===
@@ -58,10 +59,17 @@ class CourseCreateSerializer(serializers.ModelSerializer):
         required=True
     )
     image = serializers.ImageField(required=False)
+    instructor = MentorSerializer(read_only=True)
 
     class Meta:
         model = Course
-        fields = ['title', 'description', 'category', 'price', 'is_published', 'image']
+        fields = ['title', 'description', 'category', 'price', 'is_published', 'image','instructor']
+
+        def validate_instructor(self, value):
+            # Agar instructor ko'rsatilmagan bo'lsa, joriy foydalanuvchi mentor bo'lsa, uni instructor qilib belgilaymiz
+            if not value and hasattr(self.context['request'].user, 'mentor_profile'):
+                return self.context['request'].user.mentor_profile
+            return value
 
 
 # === Category ===

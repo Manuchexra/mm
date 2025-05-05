@@ -1,7 +1,7 @@
 # === apps/courses/models.py ===
 from django.db import models
 from django.conf import settings
-
+from apps.mentors.models import Mentor
 class Category(models.Model):
     name = models.CharField(max_length=100)
     slug = models.SlugField(unique=True)
@@ -12,7 +12,12 @@ class Category(models.Model):
 class Course(models.Model):
     title = models.CharField(max_length=255)
     description = models.TextField()
-    instructor = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='courses')
+    instructor = models.ForeignKey(
+        Mentor,
+        on_delete=models.CASCADE,
+        related_name='courses',
+        verbose_name=('Instructor')
+    )
     category = models.ForeignKey(Category, on_delete=models.SET_NULL, null=True)
     price = models.DecimalField(max_digits=10, decimal_places=2)
     image = models.ImageField(upload_to='courses/')

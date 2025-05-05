@@ -6,7 +6,7 @@ class NotificationSerializer(serializers.ModelSerializer):
     
     class Meta:
         model = Notification
-        fields = ['id', 'title', 'message', 'notification_type', 'is_read', 'created_at', 'time_since']
+        fields = ['id', 'is_read', 'created_at', 'time_since']
     
     def get_time_since(self, obj):
         from django.utils.timesince import timesince
